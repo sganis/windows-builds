@@ -6,18 +6,13 @@
 :: 2. Zlib
 :: 3. LibSSH
 :: 4. LibSSH2
-
+:: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
+:: zlib: 		http://zlib.net/zlib1211.zip
+:: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
+:: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
 
 @echo off
 setlocal
- 
-::if [%4]==[] goto :usage
-::if "%1"=="-h" goto :usage
-::
-::set USER=%1
-::set HOST=%2
-::set PORT=%3
-::set DRIVE=%4
  
 :: this script directory
 set DIR=%~dp0
@@ -32,10 +27,7 @@ set build_ssh2=1
 :: run vsvars[64|32].bat and set platform
 ::set PLATFORM=x64
 set CONFIGURATION=Release
-set "GENERATOR=V Studio 16 2019"
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set "GENERATOR=V Studio 14 2015" )
+set "GENERATOR=Visual Studio 16 2019"
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib
@@ -47,16 +39,16 @@ set OPENSSL=OpenSSL_1_1_1e
 set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
 
-:: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
-:: zlib: 		http://zlib.net/zlib1211.zip
-:: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
-:: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set "GENERATOR=V Studio 14 2015" )
 
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/%LIBSSH2%.zip
 
+echo downloading...
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
 if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
