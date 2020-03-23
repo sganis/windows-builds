@@ -33,6 +33,7 @@ set build_ssh2=1
 ::set PLATFORM=x64
 set CONFIGURATION=Release
 set "MSVC=Visual Studio 16 2019"
+if [%APPVEYOR_BUILD_WORKER_IMAGE%]==[Visual Studio 2019] set "MSVC=Visual Studio 16 2019"
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib
