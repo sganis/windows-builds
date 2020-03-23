@@ -11,4 +11,4 @@ configuration:
   - Release
   - Debug
 build_script:
-  - build_deps.bat
+  - build_dep.bat
