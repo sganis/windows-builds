@@ -17,4 +17,10 @@ build_script:
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if "%PLATFORM%"=="x64" call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+  - cmd: >-
+    appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "nasm.zip"
+    7z x "nasm.zip" > nul
+    move nasm-* NASM
+    set PATH=%PATH%;%CD%\NASM;
+    nasm -v
   - build_dep.bat
