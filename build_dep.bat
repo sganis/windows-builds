@@ -32,8 +32,10 @@ set build_ssh2=1
 :: run vsvars[64|32].bat and set platform
 ::set PLATFORM=x64
 set CONFIGURATION=Release
-set "MSVC=Visual Studio 16 2019"
-if [%APPVEYOR_BUILD_WORKER_IMAGE%]==[Visual Studio 2019] set "MSVC=Visual Studio 16 2019"
+set "GENERATOR=V Studio 16 2019"
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set "GENERATOR=V Studio 14 2015" )
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib
@@ -92,7 +94,7 @@ cd %ZLIBF%
 mkdir build && cd build
 cmake ..                                         		^
 	-A %ARCH% 									 		^
-	-G"%MSVC%"                                   		^
+	-G"%GENERATOR%"                              		^
 	-DCMAKE_INSTALL_PREFIX="C:\zlib-%PLATFORM%"  		^
 	-DBUILD_SHARED_LIBS=OFF
 cmake --build . --config Release --target install
@@ -112,7 +114,7 @@ cd %LIBSSH%
 mkdir build && cd build
 cmake .. 												^
 	-A %ARCH%  											^
-	-G"%MSVC%"                             				^
+	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX="C:\libssh-%PLATFORM%"      	^
 	-DOPENSSL_ROOT_DIR="C:\openssl-%PLATFORM%"        	^
 	-DZLIB_LIBRARY="C:\zlib-%PLATFORM%\lib\zlibstatic.lib" ^
@@ -138,7 +140,7 @@ cd libssh2-%LIBSSH2%
 mkdir build && cd build
 cmake .. 												^
 	-A %ARCH%  											^
-	-G"%MSVC%"                             				^
+	-G"%GENERATOR%"                        				^
 	-DBUILD_SHARED_LIBS=OFF 							^
 	-DCMAKE_INSTALL_PREFIX="C:/libssh2-%PLATFORM%"      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
