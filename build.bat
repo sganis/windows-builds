@@ -68,7 +68,7 @@ if %PLATFORM%==x86 (
 set DASH_D=
 set D=
 if %CONFIGURATION%==Debug (
-	set DASH_D=-d
+	set DASH_D=--debug
 	set D=d
 ) 
 
@@ -80,16 +80,17 @@ if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
+mkdir build && cd build
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
-perl Configure no-shared no-stdio no-sock 				^
+perl ../Configure no-shared no-stdio no-sock no-engine	no-tests			^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D% || goto fail
 ::call ms\do_win64a
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
 ::nmake -f ms\nt.mak install
-nmake 			 || goto fail
-nmake install 	 || goto fail
+nmake >nul || goto fail
+nmake install 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i 
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
 cd %CURDIR%

@@ -11,9 +11,9 @@ cache:
 install:
   - dir /b C:\cache || mkdir C:\cache
   - dir C:\cache
-  - if not exist C:\strawberry choco install strawberryperl -y
-  - set PATH=C:\strawberry\perl\bin;%PATH%
-  - cd %APPVEYOR_BUILD_FOLDER%
+  # - if not exist C:\strawberry choco install strawberryperl -y
+  # - set PATH=C:\strawberry\perl\bin;%PATH%
+  # - cd %APPVEYOR_BUILD_FOLDER%
   - perl -v
   - cmd: |
       if not exist C:\cache\nasm.zip appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
