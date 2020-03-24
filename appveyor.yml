@@ -20,3 +20,7 @@ build_script:
       set PATH=%PATH%;%CD%\NASM
       nasm -v
   - build_dep.bat
+artifacts:
+  - path: lib
+    name: winlibs
+    type: zip

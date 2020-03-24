@@ -76,8 +76,8 @@ perl Configure no-shared no-stdio no-sock 				^
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
 ::nmake -f ms\nt.mak install
-nmake
-nmake install
+nmake >nul 2>&1
+nmake install >nul 2>&1
 xcopy C:\openssl-%PLATFORM%\include %TARGET%\openssl\include /y /s /i 
 xcopy C:\openssl-%PLATFORM%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
@@ -95,7 +95,7 @@ cmake ..                                         		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX="C:\zlib-%PLATFORM%"  		^
 	-DBUILD_SHARED_LIBS=OFF
-cmake --build . --config Release --target install
+cmake --build . --config Release --target install >nul 2>&1
 xcopy C:\zlib-%PLATFORM%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy C:\zlib-%PLATFORM%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
@@ -123,7 +123,7 @@ cmake .. 												^
 	-DBUILD_SHARED_LIBS=ON ^
 	-DWITH_SERVER=OFF
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config Release --target install
+cmake --build . --config Release --target install >nul 2>&1
 xcopy C:\libssh-%PLATFORM%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy C:\libssh-%PLATFORM%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy C:\libssh-%PLATFORM%\include %TARGET%\libssh\include /y /s /i
@@ -154,7 +154,7 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF
 
-cmake --build . --config Release --target install
+cmake --build . --config Release --target install >nul 2>&1
 xcopy C:\libssh2-%PLATFORM%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy C:\libssh2-%PLATFORM%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
