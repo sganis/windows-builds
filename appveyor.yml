@@ -4,7 +4,7 @@ image:
   # - Visual Studio 2017
 platform: 
   - x64
-  # - x86
+  - x86
 configuration: 
   - Release
   # - Debug
@@ -12,13 +12,14 @@ cache:
   - C:\strawberry
   - C:\cache
 install:
-  - if not exist "C:\strawberry" choco install strawberryperl -y
+  - dir C:\cache
+  - if not exist C:\strawberry choco install strawberryperl -y
   - set PATH=C:\strawberry\perl\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%
   - perl -v
   - cmd: |
-      appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "nasm.zip"
-      7z x nasm.zip
+      if not exist "C:\cache\nasm.zip" appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
+      7z x "C:\cache\nasm.zip"
       move nasm-* NASM
       set PATH=%PATH%;%CD%\NASM
       nasm -v
