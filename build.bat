@@ -162,8 +162,8 @@ cmake .. 												^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
 	-DENABLE_ZLIB_COMPRESSION=ON 						^
-	-DZLIB_LIBRARY=%ZLIBDIR%\lib\zlibstatic.lib 		^
-	-DZLIB_INCLUDE_DIR=%ZLIBDIR%\include 			    ^
+	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib 		^
+	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 	-DBUILD_TESTING=OFF 								^
