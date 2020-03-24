@@ -12,7 +12,7 @@ cache:
   - C:\strawberry
   - C:\cache
 install:
-  - if not exists C:\cache mkdir C:\cache
+  - dir /b C:\cache || mkdir C:\cache
   - dir C:\cache
   - if not exist C:\strawberry choco install strawberryperl -y
   - set PATH=C:\strawberry\perl\bin;%PATH%
