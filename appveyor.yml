@@ -8,17 +8,24 @@ platform:
 configuration: 
   - Release
   # - Debug
-build_script:
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+cache:
+  - C:\strawberry
+install:
+  - if not exist "C:\strawberry" choco install strawberryperl -y
+  - set PATH=C:\strawberry\perl\bin;%PATH%
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - perl -v
   - cmd: |
       appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "nasm.zip"
       7z x nasm.zip
       move nasm-* NASM
       set PATH=%PATH%;%CD%\NASM
       nasm -v
+build_script:
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - build_dep.bat
 artifacts:
   - path: lib
