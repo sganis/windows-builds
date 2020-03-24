@@ -25,8 +25,8 @@ set build_ssh2=1
 ::set CONFIGURATION=Release
 set "GENERATOR=Visual Studio 16 2019"
 
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=Visual Studio 16 2019" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=Visual Studio 15 2017" )
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib
@@ -39,6 +39,8 @@ set OPENSSL=OpenSSL_1_1_1e
 set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
 
+set CACHE=C:\cache
+
 :: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
 :: zlib: 		http://zlib.net/zlib1211.zip
 :: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
@@ -49,10 +51,13 @@ set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/%LIBSSH2%.zip
 
+mkdir %CACHE% >nul
+cd %CACHE%
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
 if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
 if not exist libssh2-%LIBSSH2%.zip 	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile libssh2-%LIBSSH2%.zip"
+cd %CURDIR%
 
 if %PLATFORM%==x86 (
 	set ARCH=Win32
@@ -65,7 +70,7 @@ if %PLATFORM%==x86 (
 :: openssl
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
-%DIR%\7za.exe x openssl-%OPENSSL%.zip >nul
+%DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
@@ -87,7 +92,7 @@ dir /b %TARGET%\openssl\lib\%PLATFORM%\libcrypto.lib || goto fail
 :zlib
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
-%DIR%\7za.exe x %ZLIB%.zip >nul
+%DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul
 cd %ZLIBF%
 mkdir build && cd build
 cmake ..                                         		^
@@ -106,7 +111,7 @@ dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib || goto fail
 :libssh
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
-%DIR%\7za.exe e %LIBSSH%.tar.xz -y 						^
+%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul
 cd %LIBSSH%
 mkdir build && cd build
@@ -136,7 +141,7 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll || goto fail
 :libssh2
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
-%DIR%\7za.exe x libssh2-%LIBSSH2%.zip -y >nul
+%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul
 cd libssh2-%LIBSSH2%
 mkdir build && cd build
 cmake .. 												^

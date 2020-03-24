@@ -10,6 +10,7 @@ configuration:
   # - Debug
 cache:
   - C:\strawberry
+  - C:\cache
 install:
   - if not exist "C:\strawberry" choco install strawberryperl -y
   - set PATH=C:\strawberry\perl\bin;%PATH%
