@@ -15,8 +15,8 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_zlib=1
 set build_ossl=1
+set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
 ::set with_zlib=0
@@ -83,18 +83,18 @@ cd openssl-%OPENSSL%
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
 perl Configure no-shared no-stdio no-sock 				^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
+	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D% || goto fail
 ::call ms\do_win64a
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
 ::nmake -f ms\nt.mak install
-nmake >nul 2>&1
-nmake install >nul 2>&1
+nmake 			 || goto fail
+nmake install 	 || goto fail
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i 
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
 cd %CURDIR%
-dir /b %TARGET%\openssl\include || goto fail
-dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib || goto fail
+dir /b %TARGET%\openssl\include >nul || goto fail
+dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib >nul || goto fail
 
 
 :zlib
@@ -109,15 +109,15 @@ cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DBUILD_SHARED_LIBS=OFF
-
-cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+	-DBUILD_SHARED_LIBS=OFF 							^
+	|| goto fail
+cmake --build . --config %CONFIGURATION% --target install >nul 2>&1 || goto fail
 rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
-dir /b %TARGET%\zlib\include || goto fail
-dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib || goto fail
+dir /b %TARGET%\zlib\include >nul || goto fail
+dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib >nul || goto fail
 
 
 :libssh
@@ -138,16 +138,18 @@ cmake .. 												^
 	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 	-DBUILD_SHARED_LIBS=ON ^
-	-DWITH_SERVER=OFF
+	-DWITH_SERVER=OFF ^
+	|| goto fail
+::	-DCMAKE_CXX_FLAGS="/wd"
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config %CONFIGURATION% --target install
+cmake --build . --config %CONFIGURATION% --target install 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
-dir /b %TARGET%\libssh\include || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.lib || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll || goto fail
+dir /b %TARGET%\libssh\include >nul || goto fail
+dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.lib >nul || goto fail
+dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll >nul || goto fail
 
 
 :libssh2
