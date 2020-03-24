@@ -78,18 +78,19 @@ set PREFIX=C:\openssl-%CONFIGURATION%-%PLATFORM%
 set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
-%DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
+%DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip
 cd openssl-%OPENSSL%
-mkdir build && cd build
+mkdir build 
+cd build
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
 perl ../Configure no-shared no-stdio no-sock no-engine	no-tests			^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D% || goto fail
+	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D% 
 ::call ms\do_win64a
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
 ::nmake -f ms\nt.mak install
-nmake >nul || goto fail
+nmake || goto fail
 nmake install 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i 
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
