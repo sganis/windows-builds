@@ -40,6 +40,7 @@ set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
 
 set CACHE=C:\cache
+dir /b %CACHE% || mkdir %CACHE%
 
 :: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
 :: zlib: 		http://zlib.net/zlib1211.zip
@@ -51,7 +52,6 @@ set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/%LIBSSH2%.zip
 
-mkdir %CACHE% >nul
 cd %CACHE%
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
