@@ -1,13 +1,13 @@
 version: 1.{build}
 image: 
   - Visual Studio 2019
-  - Visual Studio 2017
+  # - Visual Studio 2017
 platform: 
   - x64
-  - x86
+  # - x86
 configuration: 
   - Release
-  - Debug
+  # - Debug
 build_script:
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
