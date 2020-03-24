@@ -1,15 +1,12 @@
 :: Golddrive
-:: 10/30/2018, sganis
+:: 03/22/2020, sganis
 ::
 :: Build dependencies
 :: 1. OpenSSL
 :: 2. Zlib
 :: 3. LibSSH
 :: 4. LibSSH2
-:: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
-:: zlib: 		http://zlib.net/zlib1211.zip
-:: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
-:: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
+
 
 @echo off
 setlocal
@@ -18,16 +15,18 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set download=1
 set build_zlib=1
 set build_ossl=1
 set build_ssh1=1
 set build_ssh2=1
-
+::set with_zlib=0
 :: run vsvars[64|32].bat and set platform
 ::set PLATFORM=x64
-set CONFIGURATION=Release
+::set CONFIGURATION=Release
 set "GENERATOR=Visual Studio 16 2019"
+
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
+if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib
@@ -36,19 +35,20 @@ mkdir %TARGET%
 set ZLIB=zlib1211
 set ZLIBF=zlib-1.2.11
 set OPENSSL=OpenSSL_1_1_1e
+::set OPENSSL=OpenSSL_1_0_2u
 set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
 
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=V Studio 16 2019" )
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=V Studio 15 2017" )
-if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set "GENERATOR=V Studio 14 2015" )
+:: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_1_1e.zip 
+:: zlib: 		http://zlib.net/zlib1211.zip
+:: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
+:: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
 
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/%LIBSSH2%.zip
 
-echo downloading...
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
 if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
@@ -67,9 +67,15 @@ if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x openssl-%OPENSSL%.zip
 cd openssl-%OPENSSL%
-perl Configure no-shared no-asm no-stdio no-sock 		^
+::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
+::	--openssldir=C:\openssl-%PLATFORM%
+perl Configure no-shared no-stdio no-sock 				^
 	VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 	--openssldir=C:\openssl-%PLATFORM%
+::call ms\do_win64a
+::ms\do_nasm.bat
+::nmake -f ms\nt.mak 
+::nmake -f ms\nt.mak install
 nmake
 nmake install
 xcopy C:\openssl-%PLATFORM%\include %TARGET%\openssl\include /y /s /i 
@@ -86,7 +92,7 @@ cd %ZLIBF%
 mkdir build && cd build
 cmake ..                                         		^
 	-A %ARCH% 									 		^
-	-G"%GENERATOR%"                              		^
+	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX="C:\zlib-%PLATFORM%"  		^
 	-DBUILD_SHARED_LIBS=OFF
 cmake --build . --config Release --target install
@@ -104,6 +110,7 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y
 cd %LIBSSH%
 mkdir build && cd build
+
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
@@ -113,7 +120,9 @@ cmake .. 												^
 	-DZLIB_INCLUDE_DIR="C:\zlib-%PLATFORM%\include"     ^
 	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
-	-DBUILD_SHARED_LIBS=ON
+	-DBUILD_SHARED_LIBS=ON ^
+	-DWITH_SERVER=OFF
+::	-DWITH_ZLIB=OFF 
 cmake --build . --config Release --target install
 xcopy C:\libssh-%PLATFORM%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy C:\libssh-%PLATFORM%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
