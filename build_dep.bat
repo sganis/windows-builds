@@ -59,35 +59,41 @@ if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_UR
 if not exist libssh2-%LIBSSH2%.zip 	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile libssh2-%LIBSSH2%.zip"
 cd %CURDIR%
 
+set ARCH=x64
+set OARCH=WIN64A
 if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
-) else (
-	set ARCH=x64
-	set OARCH=WIN64A
-)
+) 
+set DEBUG=
+if %CONFIGURATION%==Debug (
+	set DEBUG=-d
+) 
+
 
 :: openssl
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
+set PREFIX=C:\openssl-%CONFIGURATION%-%PLATFORM%
+set OPENSSLDIR=%PREFIX%
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
 perl Configure no-shared no-stdio no-sock 				^
-	VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
-	--openssldir=C:\openssl-%PLATFORM%
+	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DEBUG%
 ::call ms\do_win64a
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
 ::nmake -f ms\nt.mak install
 nmake >nul 2>&1
 nmake install >nul 2>&1
-xcopy C:\openssl-%PLATFORM%\include %TARGET%\openssl\include /y /s /i 
-xcopy C:\openssl-%PLATFORM%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i 
+xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include || goto fail
-dir /b %TARGET%\openssl\lib\%PLATFORM%\libcrypto.lib || goto fail
+dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib || goto fail
+
 
 :zlib
 if %build_zlib% neq 1 goto libssh
@@ -95,17 +101,20 @@ if exist %ZLIBF% rd /s /q %ZLIBF%
 %DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul
 cd %ZLIBF%
 mkdir build && cd build
+set PREFIX=C:\zlib-%CONFIGURATION%-%PLATFORM%
+set ZLIBDIR=%PREFIX%
 cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
-	-DCMAKE_INSTALL_PREFIX="C:\zlib-%PLATFORM%"  		^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
 	-DBUILD_SHARED_LIBS=OFF
-cmake --build . --config Release --target install >nul 2>&1
-xcopy C:\zlib-%PLATFORM%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
-xcopy C:\zlib-%PLATFORM%\include %TARGET%\zlib\include /y /s /i
+
+cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include || goto fail
-dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib || goto fail
+dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib || goto fail
 
 
 :libssh
@@ -115,27 +124,27 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul
 cd %LIBSSH%
 mkdir build && cd build
-
+set PREFIX=C:\libssh-%CONFIGURATION%-%PLATFORM%
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
-	-DCMAKE_INSTALL_PREFIX="C:\libssh-%PLATFORM%"      	^
-	-DOPENSSL_ROOT_DIR="C:\openssl-%PLATFORM%"        	^
-	-DZLIB_LIBRARY="C:\zlib-%PLATFORM%\lib\zlibstatic.lib" ^
-	-DZLIB_INCLUDE_DIR="C:\zlib-%PLATFORM%\include"     ^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
+	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
+	-DZLIB_LIBRARY=%ZLIBDIR%\lib\zlibstatic.lib 	    ^
+	-DZLIB_INCLUDE_DIR=%ZLIBDIR%\include     			^
 	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 	-DBUILD_SHARED_LIBS=ON ^
 	-DWITH_SERVER=OFF
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config Release --target install >nul 2>&1
-xcopy C:\libssh-%PLATFORM%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
-xcopy C:\libssh-%PLATFORM%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
-xcopy C:\libssh-%PLATFORM%\include %TARGET%\libssh\include /y /s /i
+cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh\include || goto fail
-dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.lib || goto fail
-dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll || goto fail
+dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.lib || goto fail
+dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll || goto fail
 
 
 :libssh2
@@ -144,27 +153,28 @@ if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
 %DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul
 cd libssh2-%LIBSSH2%
 mkdir build && cd build
+set PREFIX=C:\libssh2-%CONFIGURATION%-%PLATFORM%
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DBUILD_SHARED_LIBS=OFF 							^
-	-DCMAKE_INSTALL_PREFIX="C:/libssh2-%PLATFORM%"      	^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
-	-DOPENSSL_ROOT_DIR="C:/openssl-%PLATFORM%"        	^
-	-DENABLE_ZLIB_COMPRESSION=ON ^
-	-DZLIB_LIBRARY="C:/zlib-%PLATFORM%/lib/zlibstatic.lib" ^
-	-DZLIB_INCLUDE_DIR="C:/zlib-%PLATFORM%/include"     ^
+	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
+	-DENABLE_ZLIB_COMPRESSION=ON 						^
+	-DZLIB_LIBRARY=%ZLIBDIR%\lib\zlibstatic.lib 		^
+	-DZLIB_INCLUDE_DIR=%ZLIBDIR%\include 			    ^
 	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF
 
-cmake --build . --config Release --target install >nul 2>&1
-xcopy C:\libssh2-%PLATFORM%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-xcopy C:\libssh2-%PLATFORM%\include %TARGET%\libssh2\include /y /s /i
+cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
-dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
+dir /b %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM%\libssh2.lib || goto fail
 
 :end
 echo PASSED

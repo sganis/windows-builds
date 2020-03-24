@@ -1,13 +1,10 @@
 version: 1.{build}
 image: 
   - Visual Studio 2019
-  # - Visual Studio 2017
 platform: 
   - x64
-  - x86
 configuration: 
   - Release
-  # - Debug
 cache:
   - C:\strawberry
   - C:\cache
@@ -18,18 +15,26 @@ install:
   - set PATH=C:\strawberry\perl\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%
   - perl -v
-  - cmd: |
-      if not exist C:\cache\nasm.zip appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
+  - if not exist C:\cache\nasm.zip (
+      appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
       7z x C:\cache\nasm.zip
       move nasm-* NASM
       set PATH=%PATH%;%CD%\NASM
       nasm -v
+    )
 build_script:
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" if "%PLATFORM%"=="x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - build_dep.bat
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - set PLATFORM=x64
+  - set CONFIGURATION=Release
+  - build.bat
+  - set CONFIGURATION=Debug
+  - build.bat
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - set PLATFORM=x64
+  - set CONFIGURATION=Release
+  - build.bat
+  - set CONFIGURATION=Debug
+  - build.bat
 artifacts:
   - path: lib
     name: winlibs
