@@ -65,7 +65,7 @@ if %PLATFORM%==x86 (
 :: openssl
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
-%DIR%\7za.exe x openssl-%OPENSSL%.zip
+%DIR%\7za.exe x openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
@@ -87,7 +87,7 @@ dir /b %TARGET%\openssl\lib\%PLATFORM%\libcrypto.lib || goto fail
 :zlib
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
-%DIR%\7za.exe x %ZLIB%.zip
+%DIR%\7za.exe x %ZLIB%.zip >nul
 cd %ZLIBF%
 mkdir build && cd build
 cmake ..                                         		^
@@ -107,7 +107,7 @@ dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib || goto fail
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
 %DIR%\7za.exe e %LIBSSH%.tar.xz -y 						^
-	&& %DIR%\7za.exe x %LIBSSH%.tar -y
+	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul
 cd %LIBSSH%
 mkdir build && cd build
 
@@ -136,7 +136,7 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll || goto fail
 :libssh2
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
-%DIR%\7za.exe x libssh2-%LIBSSH2%.zip -y
+%DIR%\7za.exe x libssh2-%LIBSSH2%.zip -y >nul
 cd libssh2-%LIBSSH2%
 mkdir build && cd build
 cmake .. 												^
