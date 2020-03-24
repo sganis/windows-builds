@@ -65,23 +65,25 @@ if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
 ) 
-set DEBUG=
+set DASH_D=
+set D=
 if %CONFIGURATION%==Debug (
-	set DEBUG=-d
+	set DASH_D=-d
+	set D=d
 ) 
 
 
 :: openssl
+set PREFIX=C:\openssl-%CONFIGURATION%-%PLATFORM%
+set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
-set PREFIX=C:\openssl-%CONFIGURATION%-%PLATFORM%
-set OPENSSLDIR=%PREFIX:\=/%
 ::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
 ::	--openssldir=C:\openssl-%PLATFORM%
 perl Configure no-shared no-stdio no-sock 				^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DEBUG%
+	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
 ::call ms\do_win64a
 ::ms\do_nasm.bat
 ::nmake -f ms\nt.mak 
@@ -96,13 +98,13 @@ dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib || goto fai
 
 
 :zlib
+set PREFIX=C:\zlib-%CONFIGURATION%-%PLATFORM%
+set ZLIBDIR=%PREFIX:\=/%
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
 %DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul
 cd %ZLIBF%
 mkdir build && cd build
-set PREFIX=C:\zlib-%CONFIGURATION%-%PLATFORM%
-set ZLIBDIR=%PREFIX:\=/%
 cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
@@ -110,6 +112,7 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=OFF
 
 cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
@@ -118,13 +121,13 @@ dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib || goto fail
 
 
 :libssh
+set PREFIX=C:\libssh-%CONFIGURATION%-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
 %DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul
 cd %LIBSSH%
 mkdir build && cd build
-set PREFIX=C:\libssh-%CONFIGURATION%-%PLATFORM%
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
@@ -137,7 +140,7 @@ cmake .. 												^
 	-DBUILD_SHARED_LIBS=ON ^
 	-DWITH_SERVER=OFF
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+cmake --build . --config %CONFIGURATION% --target install
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
@@ -148,12 +151,12 @@ dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll || goto fail
 
 
 :libssh2
+set PREFIX=C:\libssh2-%CONFIGURATION%-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
 %DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul
 cd libssh2-%LIBSSH2%
 mkdir build && cd build
-set PREFIX=C:\libssh2-%CONFIGURATION%-%PLATFORM%
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
