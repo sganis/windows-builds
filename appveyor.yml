@@ -22,7 +22,8 @@ install:
       set PATH=%PATH%;%CD%\NASM
       nasm -v
 build_script:
-  - rd /s /q C:\OpenSSL-*
+  - rd /s /q C:\OpenSSL-Win64
+  - rd /s /q C:\OpenSSL-Win32
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
   - set PLATFORM=x64
   - set CONFIGURATION=Release
