@@ -115,7 +115,7 @@ cmake ..                                         		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
 	-DBUILD_SHARED_LIBS=ON 	 							^
-	|| goto fail
+	>nul || goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
@@ -143,7 +143,7 @@ cmake .. 												^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON ^
 	-DWITH_SERVER=OFF ^
-	|| goto fail
+	>nul || goto fail
 ::	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 ::	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 ::	-DWITH_ZLIB=OFF 
@@ -175,8 +175,8 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib       		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DBUILD_TESTING=OFF 								^
-	-DBUILD_EXAMPLES=OFF
-
+	-DBUILD_EXAMPLES=OFF ^
+	>nul || goto fail
 rem	-DOPENSSL_MSVC_STATIC_RT=TRUE 						
 rem	-DOPENSSL_USE_STATIC_LIBS=TRUE						
 
