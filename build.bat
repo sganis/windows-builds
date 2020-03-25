@@ -122,7 +122,8 @@ xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
-dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic%D%.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlib%D%.lib >nul || goto fail
 
 
 :libssh
