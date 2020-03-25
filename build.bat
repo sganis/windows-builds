@@ -15,7 +15,7 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=1
+set build_ossl=0
 set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
@@ -78,10 +78,9 @@ set PREFIX=%CD%\prefix\openssl-%CONFIGURATION%-%PLATFORM%
 set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
-%DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip
+%DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
-mkdir build
-cd build
+mkdir build && cd build || goto fail
 ::perl Configure no-shared VC-%OARCH% --prefix=%CD%\prefix\openssl-%PLATFORM% 			^
 ::	--openssldir=%CD%\prefix\openssl-%PLATFORM%
 perl ..\Configure no-shared no-stdio no-sock 				^
@@ -104,16 +103,16 @@ set PREFIX=%CD%\prefix\zlib-%CONFIGURATION%-%PLATFORM%
 set ZLIBDIR=%PREFIX:\=/%
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
-%DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul
+%DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul || goto fail
 cd %ZLIBF%
-mkdir build && cd build
+mkdir build && cd build || goto fail
 cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
 	-DBUILD_SHARED_LIBS=OFF 							^
 	|| goto fail
-cmake --build . --config %CONFIGURATION% --target install >nul 2>&1 || goto fail
+cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
@@ -127,9 +126,9 @@ set PREFIX=%CD%\prefix\libssh-%CONFIGURATION%-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
 %DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
-	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul
+	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
 cd %LIBSSH%
-mkdir build && cd build
+mkdir build && cd build || goto fail
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
@@ -144,7 +143,7 @@ cmake .. 												^
 	|| goto fail
 ::	-DCMAKE_CXX_FLAGS="/wd"
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config %CONFIGURATION% --target install 
+cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
@@ -158,9 +157,9 @@ dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll >nul || goto fail
 set PREFIX=%CD%\prefix\libssh2-%CONFIGURATION%-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
-%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul
+%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y || goto fail
 cd libssh2-%LIBSSH2%
-mkdir build && cd build
+mkdir build && cd build || goto fail
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
@@ -176,7 +175,7 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF
 
-cmake --build . --config %CONFIGURATION% --target install >nul 2>&1
+cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
