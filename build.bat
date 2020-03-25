@@ -145,7 +145,7 @@ cmake .. 												^
 ::	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
 ::	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 ::	-DWITH_ZLIB=OFF 
-cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
@@ -161,7 +161,7 @@ if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
 %DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul || goto fail
 cd libssh2-%LIBSSH2%
-mkdir build && cd build || goto fail
+mkdir build && cd build 
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
@@ -175,10 +175,10 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF
 
-::	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
-::	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
+rem	-DOPENSSL_MSVC_STATIC_RT=TRUE 						
+rem	-DOPENSSL_USE_STATIC_LIBS=TRUE						
 
-cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
