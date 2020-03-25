@@ -31,7 +31,7 @@ build_script:
   - set CONFIGURATION=Debug
   - call build.bat
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - set PLATFORM=x32
+  - set PLATFORM=x86
   - set CONFIGURATION=Release
   - call build.bat
   - set CONFIGURATION=Debug

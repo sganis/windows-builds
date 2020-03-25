@@ -189,6 +189,8 @@ cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
 dir /b %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM%\libssh2.lib || goto fail
 
+
+
 :end
 echo PASSED
 goto :eof
