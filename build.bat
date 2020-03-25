@@ -157,7 +157,7 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\%CONFIGURATION%\ssh.dll >nul || goto fail
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%-%CONFIGURATION%
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
-%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y || goto fail
+%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul || goto fail
 cd libssh2-%LIBSSH2%
 mkdir build && cd build || goto fail
 cmake .. 												^
