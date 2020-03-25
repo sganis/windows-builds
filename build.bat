@@ -15,7 +15,7 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=0
+set build_ossl=1
 set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
@@ -74,7 +74,7 @@ if %CONFIGURATION%==Debug (
 
 
 :: openssl
-set PREFIX=%CD%\prefix\openssl-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\openssl-%PLATFORM%-%CONFIGURATION%
 set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
@@ -92,14 +92,14 @@ perl ..\Configure no-shared no-stdio no-sock 				^
 nmake >nul 2>&1
 nmake install >nul 2>&1
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
-xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM%\%CONFIGURATION% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
-dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib >nul || goto fail
+dir /b %TARGET%\openssl\lib\%PLATFORM%\%CONFIGURATION%\libcrypto.lib >nul || goto fail
 
 
 :zlib
-set PREFIX=%CD%\prefix\zlib-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\zlib-%PLATFORM%-%CONFIGURATION%
 set ZLIBDIR=%PREFIX:\=/%
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
@@ -114,15 +114,15 @@ cmake ..                                         		^
 	|| goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
-xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM%\%CONFIGURATION% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
-dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib\%PLATFORM%\%CONFIGURATION%\zlibstatic.lib >nul || goto fail
 
 
 :libssh
-set PREFIX=%CD%\prefix\libssh-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\libssh-%PLATFORM%-%CONFIGURATION%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
 %DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
@@ -144,17 +144,17 @@ cmake .. 												^
 ::	-DCMAKE_CXX_FLAGS="/wd"
 ::	-DWITH_ZLIB=OFF 
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM%\%CONFIGURATION% /y /s /i
+xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM%\%CONFIGURATION% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh\include >nul || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.lib >nul || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll >nul || goto fail
+dir /b %TARGET%\libssh\lib\%PLATFORM%\%CONFIGURATION%\ssh.lib >nul || goto fail
+dir /b %TARGET%\libssh\lib\%PLATFORM%\%CONFIGURATION%\ssh.dll >nul || goto fail
 
 
 :libssh2
-set PREFIX=%CD%\prefix\libssh2-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\libssh2-%PLATFORM%-%CONFIGURATION%
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
 %DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y || goto fail
@@ -176,15 +176,14 @@ cmake .. 												^
 	-DBUILD_EXAMPLES=OFF
 
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM%\%CONFIGURATION% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
-dir /b %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM%\libssh2.lib || goto fail
+dir /b %TARGET%\libssh2\lib\%PLATFORM%\%CONFIGURATION%\libssh2.lib || goto fail
 
-:end
 echo PASSED
-exit /b 0
+goto :eof
 
 :fail
 echo FAILED
