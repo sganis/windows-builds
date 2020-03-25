@@ -115,6 +115,7 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=ON 	 							^
 	|| goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
+rename %PREFIX%\lib\zlib%D%.lib zlib.lib
 rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
