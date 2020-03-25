@@ -64,9 +64,11 @@ cd %CURDIR%
 
 set ARCH=x64
 set OARCH=WIN64A
+set DASH_X64=-x64
 if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
+	set DASH_X64=
 ) 
 set DASH_D=
 set D=
@@ -94,7 +96,7 @@ nmake >nul 2>&1
 nmake install >nul 2>&1
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
-xcopy %PREFIX%\bin\libcrypto-1_1-%PLATFORM%.dll* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
 dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib >nul || goto fail
@@ -115,8 +117,6 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=ON 	 							^
 	|| goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-rename %PREFIX%\lib\zlib%D%.lib zlib.lib
-rename %PREFIX%\lib\zlibstatic%D%.lib zlibstatic.lib
 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
@@ -138,7 +138,7 @@ cmake .. 												^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 	    		^
+	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib 	  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON ^
 	-DWITH_SERVER=OFF ^
