@@ -74,15 +74,17 @@ if %CONFIGURATION%==Debug (
 
 
 :: openssl
-set PREFIX=C:\openssl-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\openssl-%CONFIGURATION%-%PLATFORM%
 set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
 if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip >nul
 cd openssl-%OPENSSL%
-::perl Configure no-shared VC-%OARCH% --prefix=C:\openssl-%PLATFORM% 			^
-::	--openssldir=C:\openssl-%PLATFORM%
-perl Configure no-shared no-stdio no-sock 				^
+mkdir build
+cd build
+::perl Configure no-shared VC-%OARCH% --prefix=%CD%\prefix\openssl-%PLATFORM% 			^
+::	--openssldir=%CD%\prefix\openssl-%PLATFORM%
+perl ..\Configure no-shared no-stdio no-sock 				^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
 ::call ms\do_win64a
 ::ms\do_nasm.bat
@@ -90,7 +92,7 @@ perl Configure no-shared no-stdio no-sock 				^
 ::nmake -f ms\nt.mak install
 nmake >nul 2>&1
 nmake install >nul 2>&1
-xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i 
+xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include || goto fail
@@ -98,7 +100,7 @@ dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib || goto fai
 
 
 :zlib
-set PREFIX=C:\zlib-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\zlib-%CONFIGURATION%-%PLATFORM%
 set ZLIBDIR=%PREFIX:\=/%
 if %build_zlib% neq 1 goto libssh
 if exist %ZLIBF% rd /s /q %ZLIBF%
@@ -121,7 +123,7 @@ dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic.lib || goto fail
 
 
 :libssh
-set PREFIX=C:\libssh-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\libssh-%CONFIGURATION%-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
 %DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
@@ -151,7 +153,7 @@ dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll || goto fail
 
 
 :libssh2
-set PREFIX=C:\libssh2-%CONFIGURATION%-%PLATFORM%
+set PREFIX=%CD%\prefix\libssh2-%CONFIGURATION%-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
 %DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul
