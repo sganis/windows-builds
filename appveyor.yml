@@ -24,6 +24,7 @@ install:
       nasm -v
 build_script:
   - rd /s /q C:\OpenSSL-Win64
+  - rd /s /q C:\OpenSSL-Win32
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
   - set PLATFORM=x64
   - set CONFIGURATION=Release
@@ -31,7 +32,7 @@ build_script:
   - set CONFIGURATION=Debug
   - call build.bat
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - set PLATFORM=x32
+  - set PLATFORM=x86
   - set CONFIGURATION=Release
   - call build.bat
   - set CONFIGURATION=Debug
