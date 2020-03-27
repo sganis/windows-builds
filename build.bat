@@ -96,8 +96,8 @@ cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
 perl ..\Configure %ossl_static% no-stdio no-sock 				^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
-nmake 
-nmake install 
+nmake >nul
+nmake install >nul
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 if %STATIC% equ 0 xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
@@ -147,7 +147,8 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
-	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				
+	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 	
+	>nul || goto fail			
 ::	-DWITH_ZLIB=OFF 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
