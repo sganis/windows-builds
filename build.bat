@@ -20,7 +20,7 @@ set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
 
-set STATIC=0
+set STATIC=1
 
 ::set with_zlib=0
 :: run vsvars[64|32].bat and set platform
@@ -78,8 +78,12 @@ if %CONFIGURATION%==Debug (
 ) 
 
 set ossl_static=
+set SHARED_ONOFF=ON
+set DOPEN_SSL_STATIC=
 if %STATIC% equ 1 (
 	set "ossl_static=no-shared"
+	set "SHARED_ONOFF=OFF"
+	set "DOPEN_SSL_STATIC=-DOPENSSL_MSVC_STATIC_RT=TRUE -DOPENSSL_USE_STATIC_LIBS=TRUE"
 )
 
 :: openssl
@@ -114,16 +118,16 @@ cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DBUILD_SHARED_LIBS=ON 	 							^
+	-DBUILD_SHARED_LIBS=%SHARED_ONOFF% 						^
 	>nul || goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+if %STATIC% equ 0 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
 dir /b %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM%\zlibstatic%D%.lib >nul || goto fail
-dir /b %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM%\zlib%D%.lib >nul || goto fail
+if %STATIC% equ 0 dir /b %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM%\zlib%D%.lib >nul || goto fail
 
 
 :libssh
@@ -141,20 +145,18 @@ cmake .. 												^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib 	  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
-	-DBUILD_SHARED_LIBS=ON ^
-	-DWITH_SERVER=OFF ^
+	-DBUILD_SHARED_LIBS=%SHARED_ONOFF% 					^
+	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				^
 	>nul || goto fail
-::	-DOPENSSL_MSVC_STATIC_RT=TRUE 						^
-::	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 ::	-DWITH_ZLIB=OFF 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+if %STATIC% equ 0 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh\include >nul || goto fail
 dir /b %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM%\ssh.lib >nul || goto fail
-dir /b %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM%\ssh.dll >nul || goto fail
+if %STATIC% equ 0 dir /b %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM%\ssh.dll >nul || goto fail
 
 
 :libssh2
@@ -175,20 +177,18 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib       		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DBUILD_TESTING=OFF 								^
-	-DBUILD_EXAMPLES=OFF ^
+	-DBUILD_EXAMPLES=OFF %DOPEN_SSL_STATIC%				^
 	>nul || goto fail
-rem	-DOPENSSL_MSVC_STATIC_RT=TRUE 						
-rem	-DOPENSSL_USE_STATIC_LIBS=TRUE						
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+if %STATIC% equ 0 xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
 dir /b %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM%\libssh2.lib || goto fail
-
+if %STATIC% equ 0 dir /b %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM%\libssh2.dll >nul || goto fail
 
 
 :end
