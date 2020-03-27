@@ -144,7 +144,7 @@ cmake .. 												^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib 	  		^
+	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				
@@ -169,12 +169,12 @@ mkdir build && cd build
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
-	-DBUILD_SHARED_LIBS=ON  							^
+	-DBUILD_SHARED_LIBS=OFF  							^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
 	-DENABLE_ZLIB_COMPRESSION=ON 						^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib       		^
+	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF %DOPEN_SSL_STATIC%				^
