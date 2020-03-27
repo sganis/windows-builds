@@ -147,7 +147,7 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
-	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 	
+	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 	^
 	>nul || goto fail			
 ::	-DWITH_ZLIB=OFF 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
