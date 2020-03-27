@@ -95,11 +95,11 @@ perl ..\Configure %ossl_static% no-stdio no-sock 				^
 nmake >nul 2>&1
 nmake install >nul 2>&1
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
-xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
-xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib-%CONFIGURATION%-%PLATFORM% /y /s /i 
+xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib-%CONFIGURATION%-%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
-dir /b %TARGET%\openssl\lib\%CONFIGURATION%\%PLATFORM%\libcrypto.lib >nul || goto fail
+dir /b %TARGET%\openssl\lib-%CONFIGURATION%-%PLATFORM%\libcrypto.lib >nul || goto fail
 
 
 :zlib
@@ -117,13 +117,13 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=ON 	 							^
 	>nul || goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
-xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
-dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlibstatic%D%.lib >nul || goto fail
-dir /b %TARGET%\zlib\lib\%CONFIGURATION%\%PLATFORM%\zlib%D%.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM%\zlibstatic%D%.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib-%CONFIGURATION%-%PLATFORM%\zlib%D%.lib >nul || goto fail
 
 
 :libssh
@@ -148,13 +148,13 @@ cmake .. 												^
 ::	-DOPENSSL_USE_STATIC_LIBS=TRUE						^
 ::	-DWITH_ZLIB=OFF 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
-xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh\include >nul || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.lib >nul || goto fail
-dir /b %TARGET%\libssh\lib\%CONFIGURATION%\%PLATFORM%\ssh.dll >nul || goto fail
+dir /b %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM%\ssh.lib >nul || goto fail
+dir /b %TARGET%\libssh\lib-%CONFIGURATION%-%PLATFORM%\ssh.dll >nul || goto fail
 
 
 :libssh2
@@ -182,12 +182,12 @@ rem	-DOPENSSL_USE_STATIC_LIBS=TRUE
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
-xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
-dir /b %TARGET%\libssh2\lib\%CONFIGURATION%\%PLATFORM%\libssh2.lib || goto fail
+dir /b %TARGET%\libssh2\lib-%CONFIGURATION%-%PLATFORM%\libssh2.lib || goto fail
 
 
 
