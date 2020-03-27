@@ -15,7 +15,7 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=0
+set build_ossl=1
 set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
@@ -118,7 +118,7 @@ cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DBUILD_SHARED_LIBS=%SHARED_ONOFF% 						^
+	-DBUILD_SHARED_LIBS=OFF     						^
 	>nul || goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
 if %STATIC% equ 0 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
@@ -144,7 +144,7 @@ cmake .. 												^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib%D%.lib 	  		^
+	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib 	  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				
