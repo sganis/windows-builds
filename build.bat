@@ -53,13 +53,13 @@ dir /b %CACHE% || mkdir %CACHE%
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
-set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/%LIBSSH2%.zip
+set LIBSSH2_URL=https://www.libssh2.org/download/%LIBSSH2%.tar.gz
 
 cd %CACHE%
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
 if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
-if not exist libssh2-%LIBSSH2%.zip 	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile libssh2-%LIBSSH2%.zip"
+if not exist libssh2-%LIBSSH2%.zip 	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
 cd %CURDIR%
 
 set ARCH=x64
@@ -165,9 +165,10 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 :libssh2
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto end
-if exist libssh2-%LIBSSH2% rd /s /q libssh2-%LIBSSH2%
-%DIR%\7za.exe x %CACHE%\libssh2-%LIBSSH2%.zip -y >nul || goto fail
-cd libssh2-%LIBSSH2%
+if exist %LIBSSH2% rd /s /q %LIBSSH2%
+%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.xz -y 						^
+	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
+cd %LIBSSH2%
 mkdir build && cd build 
 cmake .. 												^
 	-A %ARCH%  											^
@@ -176,7 +177,6 @@ cmake .. 												^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
-	-DENABLE_ZLIB_COMPRESSION=ON 						^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DBUILD_TESTING=OFF 								^
