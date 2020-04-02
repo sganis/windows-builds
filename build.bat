@@ -59,7 +59,7 @@ cd %CACHE%
 if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
 if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
 if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
-if not exist libssh2-%LIBSSH2%.zip 	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
+if not exist %LIBSSH2%.tar.gz 		powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
 cd %CURDIR%
 
 set ARCH=x64
@@ -166,7 +166,7 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist %LIBSSH2% rd /s /q %LIBSSH2%
-%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.xz -y 						^
+%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 						^
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
 cd %LIBSSH2%
 mkdir build && cd build 
