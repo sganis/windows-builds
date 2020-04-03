@@ -37,8 +37,7 @@ mkdir %TARGET%
 
 set ZLIB=zlib1211
 set ZLIBF=zlib-1.2.11
-set OPENSSL=OpenSSL_1_1_1e
-::set OPENSSL=OpenSSL_1_0_2u
+set OPENSSL=OpenSSL_1_1_1f
 set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
 
@@ -94,11 +93,11 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
-perl ..\Configure %ossl_static% no-stdio no-sock no-comp no-engine 	^
+perl ..\Configure %ossl_static% no-stdio no-sock no-comp 			^
 	no-hw no-ssl2 no-ssl3 no-zlib no-sock							^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
 nmake build_libs >nul
-nmake install_dev >nul
+nmake install_dev
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 if %STATIC% equ 0 xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
