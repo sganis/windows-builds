@@ -16,7 +16,7 @@ set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
 set build_ossl=1
-set build_zlib=1
+set build_zlib=0
 set build_ssh1=1
 set build_ssh2=1
 
@@ -76,10 +76,16 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
-perl ..\Configure no-shared no-stdio no-sock 	^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX%
+
+perl ..\Configure 			^
+	no-shared   			^
+	VC-%OARCH% 				^
+	--prefix=%PREFIX% 		^
+	--openssldir=%PREFIX%
+
 nmake build_libs >nul
 nmake install_dev
+
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
@@ -118,16 +124,19 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
 cd %LIBSSH%
 mkdir build && cd build || goto fail
+
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DOPENSSL_ROOT_DIR=%OPENSSLDIR% 		        	^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
-	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
+	-DCMAKE_C_STANDARD_LIBRARIES="crypt32.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib " ^
+	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
+	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
+	-DBUILD_SHARED_LIBS=ON         						^
+	-DWITH_ZLIB=OFF 									^
 	-DWITH_SERVER=OFF 									^
-	-DWITH_ZLIB=OFF 									
+	-DWITH_EXAMPLES=OFF 					
 	
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -147,6 +156,7 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
 cd %LIBSSH2%
 mkdir build && cd build 
+
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
