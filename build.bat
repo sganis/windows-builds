@@ -136,7 +136,7 @@ if %STATIC% equ 0 dir /b %TARGET%\zlib\lib\%PLATFORM%\zlib%D%.lib >nul || goto f
 set PREFIX=%CD%\prefix\libssh-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
-%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 						^
+%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 				^
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
 cd %LIBSSH%
 mkdir build && cd build || goto fail
@@ -148,8 +148,8 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
-	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 	^
-	-DWITH_ZLIB=OFF ^
+	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				^
+	-DWITH_ZLIB=OFF 									^
 	>nul || goto fail			
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
@@ -182,6 +182,7 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF %DOPEN_SSL_STATIC%				^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
+	-DENABLE_CRYPT_NONE=ON 								^
 	>nul || goto fail
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
