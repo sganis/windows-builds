@@ -137,10 +137,7 @@ cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DCMAKE_C_STANDARD_LIBRARIES=" 						^
-	crypt32.lib ws2_32.lib kernel32.lib user32.lib 		^
-	gdi32.lib winspool.lib shell32.lib ole32.lib 		^
-	oleaut32.lib uuid.lib comdlg32.lib advapi32.lib" 	^
+	-DCMAKE_C_STANDARD_LIBRARIES="crypt32.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib" ^
 	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
