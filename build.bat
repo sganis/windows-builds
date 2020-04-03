@@ -81,7 +81,7 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
 
-perl ..\Configure no-shared	no-stdio no-sock 			^
+perl ..\Configure no-shared	no-stdio no-sock no-engine no-hw ^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX%
 
 nmake build_libs >nul
@@ -160,6 +160,8 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y || goto fail
 cd %LIBSSH2%
 mkdir build && cd build 
+
+set CL=/DOPENSSL_NO_ENGINE=1 %CL%
 
 cmake .. 												^
 	-A %ARCH%  											^
