@@ -15,9 +15,9 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=1
+set build_ossl=0
 set build_zlib=0
-set build_ssh1=1
+set build_ssh1=0
 set build_ssh2=1
 
 ::set with_zlib=0
@@ -153,7 +153,7 @@ set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist %LIBSSH2% rd /s /q %LIBSSH2%
 %DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 						^
-	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
+	&& %DIR%\7za.exe x %LIBSSH2%.tar -y || goto fail
 cd %LIBSSH2%
 mkdir build && cd build 
 
@@ -171,15 +171,15 @@ cmake .. 												^
 ::	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
 ::	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install
+
+::-- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
 dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
-if %STATIC% equ 0 dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.dll >nul || goto fail
-
 
 :end
 echo PASSED
