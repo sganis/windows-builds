@@ -15,8 +15,8 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=1
-set build_zlib=1
+set build_ossl=0
+set build_zlib=0
 set build_ssh1=1
 set build_ssh2=1
 
@@ -79,6 +79,8 @@ mkdir build && cd build || goto fail
 
 perl ..\Configure 			^
 	no-shared   			^
+	no-stdio 	^
+	no-sock 	^
 	VC-%OARCH% 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
@@ -129,7 +131,6 @@ cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DCMAKE_C_STANDARD_LIBRARIES="crypt32.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib " ^
 	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
@@ -137,8 +138,11 @@ cmake .. 												^
 	-DWITH_ZLIB=OFF 									^
 	-DWITH_SERVER=OFF 									^
 	-DWITH_EXAMPLES=OFF 					
-	
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
+
+:: 	-DCMAKE_C_STANDARD_LIBRARIES="crypt32.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib " ^
+
+cmake --build . --config %CONFIGURATION% --target install 
+::-- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
@@ -160,7 +164,7 @@ mkdir build && cd build
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
-	-DBUILD_SHARED_LIBS=OFF  							^
+	-DBUILD_SHARED_LIBS=ON  							^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
@@ -168,6 +172,7 @@ cmake .. 												^
 	-DBUILD_EXAMPLES=OFF        						^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
 	-DENABLE_CRYPT_NONE=ON 								
+
 ::	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
 ::	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 
@@ -175,6 +180,7 @@ cmake --build . --config %CONFIGURATION% --target install
 
 ::-- /clp:ErrorsOnly
 
+xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
