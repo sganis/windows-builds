@@ -93,8 +93,7 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
-perl ..\Configure %ossl_static% no-stdio no-sock no-comp 			^
-	no-hw no-ssl2 no-ssl3 no-zlib no-sock							^
+perl ..\Configure %ossl_static% 	^
 	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
 nmake build_libs >nul
 nmake install_dev
@@ -148,9 +147,8 @@ cmake .. 												^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				^
-	-DWITH_ZLIB=OFF 									^
-	>nul || goto fail			
-
+	-DWITH_ZLIB=OFF 									
+	
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -181,8 +179,7 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF %DOPEN_SSL_STATIC%				^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
-	-DENABLE_CRYPT_NONE=ON 								^
-	>nul || goto fail
+	-DENABLE_CRYPT_NONE=ON 								
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
