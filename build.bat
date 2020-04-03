@@ -15,8 +15,8 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=0
-set build_zlib=0
+set build_ossl=1
+set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
 
@@ -81,8 +81,15 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
 
-perl ..\Configure no-shared	no-stdio no-sock no-engine no-hw ^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX%
+perl ..\Configure 			^
+	no-shared				^
+	no-stdio 				^
+	no-sock 				^
+	no-engine 				^
+	no-hw 					^
+	VC-%OARCH% 				^
+	--prefix=%PREFIX% 		^
+	--openssldir=%PREFIX%
 
 nmake build_libs >nul
 nmake install_dev
