@@ -92,7 +92,7 @@ perl ..\Configure 			^
 	--openssldir=%PREFIX%
 
 nmake build_libs >nul
-nmake install_dev
+nmake install_dev >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
@@ -147,6 +147,7 @@ cmake .. 												^
 	-DWITH_EXAMPLES=OFF
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
+
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
@@ -161,7 +162,7 @@ set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto end
 if exist %LIBSSH2% rd /s /q %LIBSSH2%
 %DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 			^
-	&& %DIR%\7za.exe x %LIBSSH2%.tar -y || goto fail
+	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
 cd %LIBSSH2%
 mkdir build && cd build 
 
@@ -182,7 +183,7 @@ cmake .. 												^
 rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-cmake --build . --config %CONFIGURATION% --target install /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
