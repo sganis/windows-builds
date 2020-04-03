@@ -20,8 +20,6 @@ set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
 
-set STATIC=1
-
 ::set with_zlib=0
 :: run vsvars[64|32].bat and set platform
 ::set PLATFORM=x64
@@ -68,21 +66,6 @@ if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
 	set DASH_X64=
-) 
-set DASH_D=
-set D=
-if %CONFIGURATION%==Debug (
-	set DASH_D=--debug
-	set D=d
-) 
-
-set ossl_static=
-set SHARED_ONOFF=ON
-set DOPEN_SSL_STATIC=
-if %STATIC% equ 1 (
-	set "ossl_static=no-shared"
-	set "SHARED_ONOFF=OFF"
-	set "DOPEN_SSL_STATIC=-DOPENSSL_MSVC_STATIC_RT=TRUE -DOPENSSL_USE_STATIC_LIBS=TRUE"
 )
 
 :: openssl
@@ -93,13 +76,12 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
-perl ..\Configure %ossl_static% 	^
-	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX% %DASH_D%
+perl ..\Configure no-shared no-stdio no-sock 	^
+	VC-%OARCH% --prefix=%PREFIX% --openssldir=%PREFIX%
 nmake build_libs >nul
 nmake install_dev
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
 xcopy %PREFIX%\lib\libcrypto.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
-if %STATIC% equ 0 xcopy %PREFIX%\bin\libcrypto-1_1%DASH_X64%.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
 dir /b %TARGET%\openssl\lib\%PLATFORM%\libcrypto.lib >nul || goto fail
@@ -120,13 +102,11 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=OFF     						^
 	>nul || goto fail
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
-if %STATIC% equ 0 xcopy %PREFIX%\bin\zlib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\lib\zlib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
-dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic%D%.lib >nul || goto fail
-if %STATIC% equ 0 dir /b %TARGET%\zlib\lib\%PLATFORM%\zlib%D%.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib >nul || goto fail
 
 
 :: always shared
@@ -146,7 +126,7 @@ cmake .. 												^
 	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib  		^
 	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include     			^
 	-DBUILD_SHARED_LIBS=ON          					^
-	-DWITH_SERVER=OFF %DOPEN_SSL_STATIC% 				^
+	-DWITH_SERVER=OFF 									^
 	-DWITH_ZLIB=OFF 									
 	
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
@@ -174,16 +154,15 @@ cmake .. 												^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
-	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 	-DBUILD_TESTING=OFF 								^
-	-DBUILD_EXAMPLES=OFF %DOPEN_SSL_STATIC%				^
+	-DBUILD_EXAMPLES=OFF        						^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
 	-DENABLE_CRYPT_NONE=ON 								
+::	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib    		^
+::	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include 			    ^
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-if %STATIC% equ 0 xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
