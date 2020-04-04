@@ -166,7 +166,7 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 cd %LIBSSH2%
 mkdir build && cd build 
 
-set CL=/DOPENSSL_NO_ENGINE=1 %CL%
+rem set CL=/DOPENSSL_NO_ENGINE=1 %CL%
 
 cmake .. 												^
 	-A %ARCH%  											^
