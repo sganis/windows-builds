@@ -78,7 +78,7 @@ cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
-	no-shared no-stdio no-sock 			^
+	no-shared 							^
 	no-engine no-hw 					^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
