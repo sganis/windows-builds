@@ -79,6 +79,7 @@ mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
 	no-shared 		 					^
+	no-stdio 							^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
@@ -128,15 +129,14 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 cd %LIBSSH%
 mkdir build && cd build || goto fail
 
-set "STDLIBS=crypt32.lib ws2_32.lib kernel32.lib user32.lib"
-set "STDLIBS=%STDLIBS% gdi32.lib winspool.lib shell32.lib ole32.lib"
-set "STDLIBS=%STDLIBS% oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
+rem set "STDLIBS=crypt32.lib ws2_32.lib kernel32.lib user32.lib"
+rem set "STDLIBS=%STDLIBS% gdi32.lib winspool.lib shell32.lib ole32.lib"
+rem set "STDLIBS=%STDLIBS% oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
 
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DCMAKE_C_STANDARD_LIBRARIES="%STDLIBS%" 			^
 	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
@@ -145,6 +145,8 @@ cmake .. 												^
 	-DWITH_SERVER=OFF 									^
 	-DWITH_PCAP=OFF										^
 	-DWITH_EXAMPLES=OFF
+
+rem	-DCMAKE_C_STANDARD_LIBRARIES="%STDLIBS%" 			
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 
