@@ -79,7 +79,7 @@ mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
 	no-shared 		 					^
-	no-engine no-hw 					^
+	no-engine no-hw no-comp				^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
@@ -108,7 +108,7 @@ cmake ..                                         		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
 	-DBUILD_SHARED_LIBS=OFF     						^
 	>nul || goto fail
-cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly || goto fail
+cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
@@ -183,7 +183,7 @@ rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
