@@ -1,4 +1,4 @@
-# Appveyor 
+# winlibs
 version: 1.{build}
 image: 
   - Visual Studio 2019
@@ -8,16 +8,17 @@ configuration:
   - Release
 cache:
   - C:\strawberry
-  - C:\cache
+  - C:\cache -> appveyor.yml
 install:
-  - dir /b C:\cache || mkdir C:\cache
-  - dir C:\cache
+  - dir C:\cache || mkdir C:\cache
   - if not exist C:\strawberry choco install strawberryperl -y
   - set PATH=C:\strawberry\perl\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%
   - perl -v
   - cmd: |
-      if not exist C:\cache\nasm.zip appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
+      if not exist C:\cache\nasm.zip (
+        appveyor DownloadFile "https://github.com/joedrago/nasm_mirror/raw/master/nasm-2.14.02-win64.zip" -FileName "C:\cache\nasm.zip"
+      )
       7z x C:\cache\nasm.zip
       move nasm-* NASM
       set PATH=%PATH%;%CD%\NASM

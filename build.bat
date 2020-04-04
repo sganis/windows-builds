@@ -82,7 +82,7 @@ cd openssl-%OPENSSL%
 mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
-	no-shared no-stdio no-sock no-comp	^
+	no-shared no-stdio no-sock 			^
 	no-engine no-hw 					^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
