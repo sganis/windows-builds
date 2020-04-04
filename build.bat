@@ -81,6 +81,8 @@ perl ..\Configure 						^
 	no-shared 		 					^
 	no-stdio 							^
 	no-sock 							^
+	no-engine 							^
+	no-hw 								^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
@@ -169,7 +171,7 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 cd %LIBSSH2%
 mkdir build && cd build 
 
-rem set CL=/DOPENSSL_NO_ENGINE=1 %CL%
+set CL=/DOPENSSL_NO_ENGINE=1 %CL%
 
 cmake .. 												^
 	-A %ARCH%  											^
@@ -181,7 +183,8 @@ cmake .. 												^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF        						^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
-	-DENABLE_CRYPT_NONE=ON
+ 	-DENABLE_CRYPT_NONE=ON								^
+ 	-DCLEAR_MEMORY=OFF
 
 rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlibstatic.lib
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
