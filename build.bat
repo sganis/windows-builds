@@ -79,15 +79,12 @@ mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
 	no-shared 		 					^
-	no-stdio 							^
 	no-sock 							^
-	no-engine 							^
-	no-hw 								^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
 
-rem	no-engine no-hw no-comp				
+rem	no-stdio no-engine no-hw no-comp				
 
 nmake build_libs >nul
 nmake install_dev >nul
@@ -132,14 +129,15 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 cd %LIBSSH%
 mkdir build && cd build || goto fail
 
-rem set "STDLIBS=crypt32.lib ws2_32.lib kernel32.lib user32.lib"
-rem set "STDLIBS=%STDLIBS% gdi32.lib winspool.lib shell32.lib ole32.lib"
-rem set "STDLIBS=%STDLIBS% oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
+set "STDLIBS=crypt32.lib ws2_32.lib kernel32.lib user32.lib"
+set "STDLIBS=%STDLIBS% gdi32.lib winspool.lib shell32.lib ole32.lib"
+set "STDLIBS=%STDLIBS% oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
 
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
+	-DCMAKE_C_STANDARD_LIBRARIES="%STDLIBS%" 			^
 	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
@@ -148,8 +146,6 @@ cmake .. 												^
 	-DWITH_SERVER=OFF 									^
 	-DWITH_PCAP=OFF										^
 	-DWITH_EXAMPLES=OFF
-
-rem	-DCMAKE_C_STANDARD_LIBRARIES="%STDLIBS%" 			
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 
@@ -171,7 +167,7 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 cd %LIBSSH2%
 mkdir build && cd build 
 
-set CL=/DOPENSSL_NO_ENGINE=1 %CL%
+rem set CL=/DOPENSSL_NO_ENGINE=1 %CL%
 
 cmake .. 												^
 	-A %ARCH%  											^
