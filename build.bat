@@ -79,10 +79,11 @@ mkdir build && cd build || goto fail
 
 perl ..\Configure 						^
 	no-shared 		 					^
-	no-engine no-hw no-comp				^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
+
+rem	no-engine no-hw no-comp				
 
 nmake build_libs >nul
 nmake install_dev >nul
@@ -102,12 +103,13 @@ if exist %ZLIBF% rd /s /q %ZLIBF%
 %DIR%\7za.exe x %CACHE%\%ZLIB%.zip >nul || goto fail
 cd %ZLIBF%
 mkdir build && cd build || goto fail
+
 cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DBUILD_SHARED_LIBS=OFF     						^
-	>nul || goto fail
+	-DBUILD_SHARED_LIBS=OFF     						
+
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
