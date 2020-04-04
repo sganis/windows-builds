@@ -53,14 +53,10 @@ set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://www.libssh2.org/download/%LIBSSH2%.tar.gz
 
 cd %CACHE%
-if not exist openssl-%OPENSSL%.zip 	^
-	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
-if not exist %ZLIB%.zip 			^
-	powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
-if not exist %LIBSSH%.tar.xz 		^
-	powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
-if not exist %LIBSSH2%.tar.gz 		^
-	powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
+if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
+if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
+if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
+if not exist %LIBSSH2%.tar.gz 		powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
 cd %CURDIR%
 
 set ARCH=x64
