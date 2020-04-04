@@ -85,6 +85,7 @@ perl ..\Configure 						^
 	no-shared no-stdio no-sock no-comp	^
 	no-engine no-err no-srp	no-ec2m		^
 	no-hw no-ssl2 no-ssl3 no-idea		^
+	no-dtls	no-dso no-psk	^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
