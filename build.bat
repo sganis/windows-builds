@@ -80,6 +80,7 @@ mkdir build && cd build || goto fail
 perl ..\Configure 						^
 	no-shared 		 					^
 	no-stdio 							^
+	no-sock 							^
 	VC-%OARCH% 							^
 	--prefix=%PREFIX% 					^
 	--openssldir=%PREFIX%
