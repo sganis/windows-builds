@@ -15,8 +15,8 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=1
-set build_zlib=1
+set build_ossl=0
+set build_zlib=0
 set build_ssh1=1
 set build_ssh2=1
 
@@ -133,17 +133,22 @@ if exist %LIBSSH% rd /s /q %LIBSSH%
 cd %LIBSSH%
 mkdir build && cd build || goto fail
 
+set "STDLIBS=crypt32.lib ws2_32.lib kernel32.lib user32.lib"
+set "STDLIBS=%STDLIBS% gdi32.lib winspool.lib shell32.lib ole32.lib"
+set "STDLIBS=%STDLIBS% oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
+
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DCMAKE_C_STANDARD_LIBRARIES="crypt32.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib" ^
+	-DCMAKE_C_STANDARD_LIBRARIES="%STDLIBS%" 			^
 	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
 	-DBUILD_SHARED_LIBS=ON         						^
 	-DWITH_ZLIB=OFF 									^
 	-DWITH_SERVER=OFF 									^
+	-DWITH_PCAP=OFF										^
 	-DWITH_EXAMPLES=OFF
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
@@ -171,7 +176,7 @@ set CL=/DOPENSSL_NO_ENGINE=1 %CL%
 cmake .. 												^
 	-A %ARCH%  											^
 	-G"%GENERATOR%"                        				^
-	-DBUILD_SHARED_LIBS=ON  							^
+	-DBUILD_SHARED_LIBS=OFF  							^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
