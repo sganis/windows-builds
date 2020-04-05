@@ -35,5 +35,8 @@ artifacts:
   - path: lib
     name: winlibs
     type: zip
+  - path: lib2
+    name: winlibs2
+    type: zip
 notifications: off
 deploy: off
