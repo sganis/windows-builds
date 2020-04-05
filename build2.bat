@@ -15,7 +15,7 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=0
+set build_ossl=1
 set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
@@ -31,6 +31,7 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=Visual
 
 set CURDIR=%CD%
 set TARGET=%CD%\lib2
+if exist %TARGET% rd /s /q %TARGET%
 mkdir %TARGET%
 
 set ZLIB=zlib1211
