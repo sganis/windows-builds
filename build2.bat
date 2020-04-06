@@ -138,13 +138,13 @@ cmake .. 												^
 	-DWITH_PCAP=OFF										^
  	-DWITH_SERVER=OFF 									^
  	-DWITH_EXAMPLES=OFF 								^
- 	-DWITH_ZLIB=ON 										^
- 	-DZLIB_INCLUDE_DIR="%ZLIBDIR%/include" 				^
- 	-DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib" 
+ 	-DWITH_ZLIB=OFF
 
-cmake --build . --config %CONFIGURATION% --target install 
+rem -DWITH_ZLIB=ON 										^
+rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include" 				^
+rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib" 
 
-::-- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -173,15 +173,14 @@ cmake .. 												^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
 	-DBUILD_TESTING=OFF 								^
 	-DBUILD_EXAMPLES=OFF        						^
-	-DENABLE_ZLIB_COMPRESSION=ON 						^
+	-DENABLE_ZLIB_COMPRESSION=OFF 						^
  	-DENABLE_CRYPT_NONE=ON								^
- 	-DCLEAR_MEMORY=OFF 									^
-	-DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
-	-DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
+ 	-DCLEAR_MEMORY=OFF
 
-cmake --build . --config %CONFIGURATION% --target install 
+rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
+rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-::-- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
