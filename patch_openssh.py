@@ -29,10 +29,14 @@ with open(path, 'wt') as w:
 			w.write('\t<LibreSSL-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\openssl\\</LibreSSL-Path>\n')
 		elif '<LibreSSL-x64-Path>' in line:
 			w.write('\t<LibreSSL-x64-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\openssl\\lib\\x64\\</LibreSSL-x64-Path>\n')
+		elif '<LibreSSL-x86-Path>' in line:
+			w.write('\t<LibreSSL-x86-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\openssl\\lib\\x86\\</LibreSSL-x86-Path>\n')
 		elif '<ZLib-Path>' in line:
 			w.write('\t<ZLib-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\zlib\\include\\</ZLib-Path>\n')
 		elif '<ZLib-x64-Path>' in line:
 			w.write('\t<ZLib-x64-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\zlib\\lib\\x64\\</ZLib-x64-Path>\n')
+		elif '<ZLib-x86-Path>' in line:
+			w.write('\t<ZLib-x86-Path>$(SolutionDir)..\\..\\..\\..\\vendor\\zlib\\lib\\x86\\</ZLib-x86-Path>\n')
 		elif '<SSLLib>' in line:
 			w.write('\t<SSLLib>libeay32.lib;</SSLLib>\n')
 		elif '<WindowsSDKVersion>' in line:
