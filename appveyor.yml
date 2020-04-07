@@ -32,10 +32,10 @@ build_script:
   # - set PLATFORM=x86
   # - call build.bat
 artifacts:
-  - path: lib
+  - path: vendor
     name: winlibs
     type: zip
-  - path: lib2
+  - path: vendor2
     name: winlibs2
     type: zip
 notifications: off
