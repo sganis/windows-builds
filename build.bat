@@ -1,12 +1,12 @@
 :: Golddrive
 :: 03/22/2020, sganis
 ::
-:: Build dependencies
+:: Visual Studio 2019 script to build:
 :: 1. OpenSSL
 :: 2. Zlib
 :: 3. LibSSH
 :: 4. LibSSH2
-
+:: 5. OpenSSH
 
 @echo off
 setlocal
@@ -19,9 +19,8 @@ set build_ossl=1
 set build_zlib=1
 set build_ssh1=1
 set build_ssh2=1
+set build_ossh=1
 
-::set with_zlib=0
-:: run vsvars[64|32].bat and set platform
 ::set PLATFORM=x64
 ::set CONFIGURATION=Release
 set "GENERATOR=Visual Studio 16 2019"
@@ -31,33 +30,37 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=Visual
 
 set CURDIR=%CD%
 set TARGET=%CD%\vendor
-if exist %TARGET% rd /s /q %TARGET%
-mkdir %TARGET%
+rem if exist %TARGET% rd /s /q %TARGET%
+rem mkdir %TARGET%
 
+set OPENSSL=OpenSSL_1_0_2u
 set ZLIB=zlib1211
 set ZLIBF=zlib-1.2.11
-set OPENSSL=OpenSSL_1_0_2u
 set LIBSSH=libssh-0.9.3
 set LIBSSH2=libssh2-1.9.0
+set OPENSSH=8.1.0.0
 
 set CACHE=C:\cache
 dir /b %CACHE% || mkdir %CACHE%
 
+:: openssh : 	https://github.com/PowerShell/openssh-portable/archive/v8.1.0.0.zip
 :: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_0_2u.zip 
 :: zlib: 		http://zlib.net/zlib1211.zip
 :: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
 :: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
 
+set OPENSSH_URL=https://github.com/PowerShell/openssh-portable/archive/v%OPENSSH%.zip
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
 set LIBSSH2_URL=https://www.libssh2.org/download/%LIBSSH2%.tar.gz
 
 cd %CACHE%
-if not exist openssl-%OPENSSL%.zip 	powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
-if not exist %ZLIB%.zip 			powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
-if not exist %LIBSSH%.tar.xz 		powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
-if not exist %LIBSSH2%.tar.gz 		powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
+if not exist openssh-portable-%OPENSSH%.zip powershell -Command "Invoke-WebRequest %OPENSSH_URL% -OutFile openssh-portable-%OPENSSH%.zip"
+if not exist openssl-%OPENSSL%.zip          powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
+if not exist %ZLIB%.zip 		            powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
+if not exist %LIBSSH%.tar.xz 	            powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
+if not exist %LIBSSH2%.tar.gz 	            powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
 cd %CURDIR%
 
 set ARCH=x64
@@ -69,7 +72,7 @@ if %PLATFORM%==x86 (
 	set DASH_X64=
 )
 
-:: openssl
+:openssl
 set PREFIX=%CD%\prefix\openssl-%PLATFORM%
 set OPENSSLDIR=%PREFIX:\=/%
 if %build_ossl% neq 1 goto zlib
@@ -82,11 +85,10 @@ perl Configure 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
 call ms\do_win64a
-nmake -f ms\ntdll.mak clean >nul
 nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 
-xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul
+xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i || goto fail
 xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
@@ -110,12 +112,11 @@ cmake ..                                         		^
 	-DBUILD_SHARED_LIBS=ON     						
 
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
-xcopy %PREFIX%\lib\zlib.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\*.dll %TARGET%\zlib\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\zlib\include >nul || goto fail
-dir /b %TARGET%\zlib\lib\%PLATFORM%\zlib.lib >nul || goto fail
+dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib >nul || goto fail
 
 
 :libssh
@@ -157,7 +158,7 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 
 :libssh2
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
-if %build_ssh2% neq 1 goto end
+if %build_ssh2% neq 1 goto openssh
 if exist %LIBSSH2% rd /s /q %LIBSSH2%
 %DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 			^
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
@@ -188,6 +189,33 @@ xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail
 dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
+
+
+:openssh
+set OSSH=openssh-portable-%OPENSSH%
+if exist %OSSH% rd /s /q %OSSH%
+%DIR%\7za.exe x %CACHE%\%OSSH%.zip -y >nul || goto fail
+cd %OSSH%
+
+python ..\patch_openssh.py || goto fail
+msbuild contrib\win32\openssh\config.vcxproj ^
+	-p:Configuration=Release -m -v:minimal -t:rebuild /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\win32iocompat.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\openbsd_compat.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\libssh.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\keygen.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\ssh.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+
+xcopy bin\x64\Release\*.exe %TARGET%\openssh /y /s /i >nul
+cd %CURDIR%
+dir /b %TARGET%\openssh\ssh-keygen.exe >nul || goto fail
+dir /b %TARGET%\openssh\ssh.exe >nul || goto fail
+
 
 :end
 echo PASSED
