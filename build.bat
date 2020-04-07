@@ -198,20 +198,15 @@ if exist %OSSH% rd /s /q %OSSH%
 cd %OSSH%
 
 python ..\patch_openssh.py || goto fail
-msbuild contrib\win32\openssh\config.vcxproj ^
-	-p:Configuration=Release -m -v:minimal -t:rebuild /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\win32iocompat.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\openbsd_compat.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\libssh.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\keygen.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\ssh.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
-msbuild contrib\win32\openssh\sftp.vcxproj ^
-	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+
+set "ARGS=-p:Configuration=Release -m -v:quiet -t:rebuild /p:PlatformToolset=v142"
+msbuild contrib\win32\openssh\config.vcxproj %ARGS%
+msbuild contrib\win32\openssh\win32iocompat.vcxproj %ARGS%
+msbuild contrib\win32\openssh\openbsd_compat.vcxproj %ARGS%
+msbuild contrib\win32\openssh\libssh.vcxproj %ARGS%
+msbuild contrib\win32\openssh\keygen.vcxproj %ARGS%
+msbuild contrib\win32\openssh\ssh.vcxproj %ARGS%
+msbuild contrib\win32\openssh\sftp.vcxproj %ARGS%
 
 xcopy bin\x64\Release\*.exe %TARGET%\openssh /y /s /i >nul
 cd %CURDIR%
