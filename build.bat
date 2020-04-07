@@ -80,17 +80,17 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 
-perl Configure no-shared	^
+perl Configure 				^
 	VC-WIN64A 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
 call ms\do_win64a
-nmake -f ms\nt.mak >nul
-nmake -f ms\nt.mak install >nul
+nmake -f ms\ntdll.mak >nul
+nmake -f ms\ntdll.mak install >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i || goto fail
 xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
-rem xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
 dir /b %TARGET%\openssl\lib\%PLATFORM%\libeay32.lib >nul || goto fail
@@ -133,7 +133,7 @@ cmake .. 												^
 	-G"%GENERATOR%"                        				^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
 	-DCMAKE_BUILD_TYPE=Release 							^
-	-DBUILD_SHARED_LIBS=OFF          					^
+	-DBUILD_SHARED_LIBS=ON          					^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
 	-DWITH_SERVER=OFF 									^
 	-DWITH_PCAP=OFF										^
@@ -148,12 +148,12 @@ rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
-rem xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh\include >nul || goto fail
 dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.lib >nul || goto fail
-rem dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
+dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 
 
 :libssh2
@@ -172,7 +172,7 @@ cmake .. 												^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
-	-DBUILD_TESTING=OFF 								^
+	-DBUILD_TESTING=ON  								^
 	-DBUILD_EXAMPLES=OFF        						^
 	-DENABLE_ZLIB_COMPRESSION=OFF 						^
  	-DENABLE_CRYPT_NONE=ON								^
@@ -184,7 +184,7 @@ rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\libssh2\include || goto fail

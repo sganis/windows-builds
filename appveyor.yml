@@ -8,7 +8,7 @@ configuration:
   - Release
 cache:
   - C:\strawberry
-  - C:\cache -> appveyor.yml
+  - C:\cache
 install:
   - dir C:\cache || mkdir C:\cache
   - if not exist C:\strawberry choco install strawberryperl -y
