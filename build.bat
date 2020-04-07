@@ -210,11 +210,14 @@ msbuild contrib\win32\openssh\keygen.vcxproj ^
 	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
 msbuild contrib\win32\openssh\ssh.vcxproj ^
 	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
+msbuild contrib\win32\openssh\sftp.vcxproj ^
+	-p:Configuration=Release -m -v:minimal /p:PlatformToolset=v142
 
 xcopy bin\x64\Release\*.exe %TARGET%\openssh /y /s /i >nul
 cd %CURDIR%
 dir /b %TARGET%\openssh\ssh-keygen.exe >nul || goto fail
 dir /b %TARGET%\openssh\ssh.exe >nul || goto fail
+dir /b %TARGET%\openssh\sftp.exe >nul || goto fail
 
 
 :end
