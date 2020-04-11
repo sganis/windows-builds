@@ -66,11 +66,11 @@ cd %CURDIR%
 set ARCH=x64
 set OARCH=WIN64A
 set DASH_X64=-x64
-set DOMS=do_win64a
+set DOMS=do_win64a.bat
 if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
-	set DOMS=do_nasm
+	set DOMS=do_ms.bat
 	set DASH_X64=
 )
 
@@ -87,6 +87,7 @@ perl Configure 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
 call ms\%DOMS%
+if %PLATFORM%==x86 call ms\do_nasm.bat
 nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 
@@ -210,7 +211,7 @@ msbuild contrib\win32\openssh\keygen.vcxproj %ARGS%
 msbuild contrib\win32\openssh\ssh.vcxproj %ARGS%
 msbuild contrib\win32\openssh\sftp.vcxproj %ARGS%
 
-xcopy bin\x64\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
+xcopy bin\%PLATFORM%\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 xcopy %TARGET%\openssl\lib\%PLATFORM%\libeay32.dll* %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 cd %CURDIR%
 dir /b %TARGET%\openssh\%PLATFORM%\ssh-keygen.exe >nul || goto fail

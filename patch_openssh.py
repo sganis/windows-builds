@@ -55,6 +55,13 @@ with open(path, 'wt') as w:
 		else:
 			w.write(line)
 
+# replace libcrypto.lib in ssh-keygen 32-bit release
+path = r'contrib\win32\openssh\keygen.vcxproj'
+with open(path) as r:
+	data = r.read()
+with open(path, 'wt') as w:
+	w.write(data.replace('libcrypto.lib','$(SSLLib)'))
+
 # replace zlib.lib by zlibstatic.lib
 path = r'contrib\win32\openssh\ssh.vcxproj'
 with open(path) as r:
@@ -62,9 +69,19 @@ with open(path) as r:
 with open(path, 'wt') as w:
 	w.write(data.replace('zlib.lib','zlibstatic.lib'))
 
-# replace libcrypto.lib in ssh-keygen
-path = r'contrib\win32\openssh\keygen.vcxproj'
+# ssh 32-bit needs /nodefaultlib:msvcrt.lib linker option
+path = r'contrib\win32\openssh\ssh.vcxproj'
 with open(path) as r:
-	data = r.read()
+	lines = r.readlines()
 with open(path, 'wt') as w:
-	w.write(data.replace('libcrypto.lib','$(SSLLib)'))
+	link=False
+	for line in lines:
+		if '<Link>' in line: link=True
+		if '</Link>' in line: link=False
+		if link and '<AdditionalOptions>' in line:
+			w.write('      <AdditionalOptions>/incremental:no /ignore:4099 /nodefaultlib:msvcrt.lib %(AdditionalOptions)</AdditionalOptions>\n')
+		else:
+			w.write(line)
+
+
+    
