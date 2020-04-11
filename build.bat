@@ -70,7 +70,7 @@ set DOMS=do_win64a
 if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
-	set DOMS=do_ms
+	set DOMS=do_nasm
 	set DASH_X64=
 )
 
