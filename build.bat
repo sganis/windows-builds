@@ -15,10 +15,10 @@ setlocal
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-set build_ossl=1
-set build_zlib=1
-set build_ssh1=1
-set build_ssh2=1
+set build_ossl=0
+set build_zlib=0
+set build_ssh1=0
+set build_ssh2=0
 set build_ossh=1
 
 ::set PLATFORM=x64
@@ -211,7 +211,7 @@ msbuild contrib\win32\openssh\keygen.vcxproj %ARGS%
 msbuild contrib\win32\openssh\ssh.vcxproj %ARGS%
 msbuild contrib\win32\openssh\sftp.vcxproj %ARGS%
 
-xcopy bin\%PLATFORM%\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
+xcopy bin\%ARCH%\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 xcopy %TARGET%\openssl\lib\%PLATFORM%\libeay32.dll* %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 cd %CURDIR%
 dir /b %TARGET%\openssh\%PLATFORM%\ssh-keygen.exe >nul || goto fail
