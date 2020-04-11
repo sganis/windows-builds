@@ -211,8 +211,8 @@ msbuild contrib\win32\openssh\keygen.vcxproj %ARGS%
 msbuild contrib\win32\openssh\ssh.vcxproj %ARGS%
 msbuild contrib\win32\openssh\sftp.vcxproj %ARGS%
 
-xcopy bin\x64\Release\*.exe %TARGET%\openssh /y /s /i >nul
-xcopy %TARGET%\openssl\lib\%PLATFORM%\libeay32.dll* %TARGET%\openssh /y /s /i >nul
+xcopy bin\x64\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
+xcopy %TARGET%\openssl\lib\%PLATFORM%\libeay32.dll* %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 cd %CURDIR%
 dir /b %TARGET%\openssh\%PLATFORM%\ssh-keygen.exe >nul || goto fail
 dir /b %TARGET%\openssh\%PLATFORM%\ssh.exe >nul || goto fail
