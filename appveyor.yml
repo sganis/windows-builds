@@ -27,17 +27,13 @@ build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
   - set PLATFORM=x64
   - call build.bat
-  # - call build2.bat
-  # - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
-  # - set PLATFORM=x86
-  # - call build.bat
-  # - call build2.bat  
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - set PLATFORM=x86
+  - call build.bat
+test: off
 artifacts:
   - path: vendor
     name: winlibs
-    type: zip
-  - path: vendor2
-    name: winlibs2
     type: zip
 notifications: off
 deploy: off
