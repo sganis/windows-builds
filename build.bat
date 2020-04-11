@@ -87,7 +87,6 @@ perl Configure 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
 call ms\%DOMS%
-nmake -f ms\ntdll.mak clean >nul
 nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 

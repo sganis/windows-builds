@@ -61,3 +61,10 @@ with open(path) as r:
 	data = r.read()
 with open(path, 'wt') as w:
 	w.write(data.replace('zlib.lib','zlibstatic.lib'))
+
+# replace libcrypto.lib in ssh-keygen
+path = r'contrib\win32\openssh\keygen.vcxproj'
+with open(path) as r:
+	data = r.read()
+with open(path, 'wt') as w:
+	w.write(data.replace('libcrypto.lib','$(SSLLib)'))
