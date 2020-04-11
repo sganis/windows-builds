@@ -66,9 +66,11 @@ cd %CURDIR%
 set ARCH=x64
 set OARCH=WIN64A
 set DASH_X64=-x64
+set DOMS=do_win64a
 if %PLATFORM%==x86 (
 	set ARCH=Win32
 	set OARCH=WIN32
+	set DOMS=do_ms
 	set DASH_X64=
 )
 
@@ -81,10 +83,11 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 cd openssl-%OPENSSL%
 
 perl Configure 				^
-	VC-WIN64A 				^
+	VC-%OARCH% 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
-call ms\do_win64a
+call ms\%DOMS%
+nmake -f ms\ntdll.mak clean >nul
 nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 
