@@ -112,6 +112,8 @@ cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
+	-DMSVC_RUNTIME_LIBRARY=MultiThreaded				^
+	-DCMAKE_BUILD_TYPE=Release 							^
 	-DBUILD_SHARED_LIBS=OFF     						
 
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
@@ -169,9 +171,8 @@ cd %LIBSSH2%
 mkdir build && cd build 
 
 cmake .. 												^
-	-A %ARCH%  											^
-	-G"%GENERATOR%"                        				^
 	-DBUILD_SHARED_LIBS=OFF  							^
+	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
@@ -184,17 +185,18 @@ cmake .. 												^
 rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+rem cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
-cd %CURDIR%
-dir /b %TARGET%\libssh2\include || goto fail
-dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
+rem xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+rem rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+rem xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
+rem cd %CURDIR%
+rem dir /b %TARGET%\libssh2\include || goto fail
+rem dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
 
 
 :openssh
+if %build_ossh% neq 1 goto end
 set OSSH=openssh-portable-%OPENSSH%
 if exist %OSSH% rd /s /q %OSSH%
 %DIR%\7za.exe x %CACHE%\%OSSH%.zip -y >nul || goto fail
