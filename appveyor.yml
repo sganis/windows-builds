@@ -9,6 +9,7 @@ configuration:
 cache:
   - C:\strawberry
   - C:\cache
+clone_depth: 1
 install:
   - dir C:\cache || mkdir C:\cache
   - if not exist C:\strawberry choco install strawberryperl -y

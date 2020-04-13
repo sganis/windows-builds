@@ -112,8 +112,7 @@ cmake ..                                         		^
 	-A %ARCH% 									 		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DMSVC_RUNTIME_LIBRARY=MultiThreaded				^
-	-DCMAKE_BUILD_TYPE=Release 							^
+	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
 	-DBUILD_SHARED_LIBS=OFF     						
 
 cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
@@ -185,14 +184,14 @@ cmake .. 												^
 rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-rem cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
-rem xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-rem rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
-rem xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
-rem cd %CURDIR%
-rem dir /b %TARGET%\libssh2\include || goto fail
-rem dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
+xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\include %TARGET%\libssh2\include /y /s /i
+cd %CURDIR%
+dir /b %TARGET%\libssh2\include || goto fail
+dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
 
 
 :openssh
