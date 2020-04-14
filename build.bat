@@ -115,7 +115,8 @@ cmake ..                                         		^
 	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
 	-DBUILD_SHARED_LIBS=OFF     						
 
-cmake --build . --config %CONFIGURATION% --target install  -- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
+
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
 cd %CURDIR%
@@ -149,7 +150,8 @@ rem -DWITH_ZLIB=ON 										^
 rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include" 				^
 rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib" 
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target ssh -- /clp:ErrorsOnly 
+cmake -P cmake_install.cmake
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -170,9 +172,11 @@ cd %LIBSSH2%
 mkdir build && cd build 
 
 cmake .. 												^
+	-A %ARCH%  											^
+	-G"%GENERATOR%"                        				^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
 	-DBUILD_SHARED_LIBS=OFF  							^
 	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
-	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
  	-DCRYPTO_BACKEND=OpenSSL               				^
 	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
 	-DBUILD_TESTING=ON  								^
@@ -184,7 +188,8 @@ cmake .. 												^
 rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target libssh2 -- /clp:ErrorsOnly
+cmake -P cmake_install.cmake
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
