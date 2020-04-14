@@ -91,7 +91,7 @@ if %PLATFORM%==x86 call ms\do_nasm.bat
 nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 
-xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i || goto fail
+xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
 xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
 cd %CURDIR%
