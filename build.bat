@@ -126,11 +126,9 @@ dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib >nul || goto fail
 :libssh
 set PREFIX=%CD%\prefix\libssh-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
-if exist %LIBSSH% rd /s /q %LIBSSH%
-%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y                   ^
-	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
-cd %LIBSSH%
-mkdir build && cd build || goto fail
+if exist %LIBSSH% rd /s /q %LIBSSH% || goto fail
+%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y && %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
+cd %LIBSSH% && mkdir build && cd build || goto fail
 
 cmake ..                                 ^
 	-A %ARCH%                        ^
@@ -162,11 +160,9 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 :libssh2
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto openssh
-if exist %LIBSSH2% rd /s /q %LIBSSH2%
-%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y                   ^
-	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
-cd %LIBSSH2%
-mkdir build && cd build
+if exist %LIBSSH2% rd /s /q %LIBSSH2% || goto fail
+%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y && %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
+cd %LIBSSH2% && mkdir build && cd build || goto fail
 
 cmake ..                                                  ^
 	-A %ARCH%                                         ^
@@ -197,7 +193,7 @@ dir /b %TARGET%\libssh2\lib\%PLATFORM%\libssh2.lib || goto fail
 :openssh
 if %build_ossh% neq 1 goto end
 set OSSH=openssh-portable-%OPENSSH%
-if exist %OSSH% rd /s /q %OSSH%
+if exist %OSSH% rd /s /q %OSSH% || goto fail
 %DIR%\7za.exe x %CACHE%\%OSSH%.zip -y >nul || goto fail
 cd %OSSH%
 
