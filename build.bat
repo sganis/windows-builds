@@ -91,8 +91,8 @@ nmake >nul
 nmake install >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
-xcopy %PREFIX%\lib\*.* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\*.* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\*.lib %TARGET%\openssl\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\*.dll %TARGET%\openssl\lib\%PLATFORM% /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
 dir /b %TARGET%\openssl\lib\%PLATFORM%\*.lib >nul || goto fail
