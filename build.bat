@@ -10,7 +10,7 @@
 
 @echo off
 setlocal
- 
+
 :: this script directory
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
@@ -33,27 +33,27 @@ set TARGET=%CD%\vendor
 rem if exist %TARGET% rd /s /q %TARGET%
 rem mkdir %TARGET%
 
-set OPENSSL=OpenSSL_1_0_2u
-set ZLIB=zlib1211
-set ZLIBF=zlib-1.2.11
-set LIBSSH=libssh-0.9.3
-set LIBSSH2=libssh2-1.9.0
-set OPENSSH=8.1.0.0
+set OPENSSH=9.5.0.0
+set OPENSSL=openssl-3.3.0
+set ZLIB=zlib131
+set ZLIBF=zlib-1.3.1
+set LIBSSH=libssh-0.10.6
+set LIBSSH2=libssh2-1.11.0
 
 set CACHE=C:\cache
 dir /b %CACHE% || mkdir %CACHE%
 
-:: openssh : 	https://github.com/PowerShell/openssh-portable/archive/v8.1.0.0.zip
-:: openssl : 	https://github.com/openssl/openssl/archive/OpenSSL_1_0_2u.zip 
-:: zlib: 		http://zlib.net/zlib1211.zip
-:: libssh: 		https://www.libssh.org/files/0.9/libssh-0.9.3.tar.xz
-:: libssh2: 	https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
+:: openssh : 	https://github.com/PowerShell/openssh-portable/archive/refs/tags/v9.5.0.0.zip
+:: openssl :    https://github.com/openssl/openssl/archive/refs/tags/openssl-3.3.0.zip
+:: zlib: 		http://zlib.net/zlib131.zip
+:: libssh: 		https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz
+:: libssh2: 	https://github.com/libssh2/libssh2/archive/refs/tags/libssh2-1.11.0.tar.gz
 
-set OPENSSH_URL=https://github.com/PowerShell/openssh-portable/archive/v%OPENSSH%.zip
-set OPENSSL_URL=https://github.com/openssl/openssl/archive/%OPENSSL%.zip
+set OPENSSH_URL=https://github.com/PowerShell/openssh-portable/archive/refs/tags/v%OPENSSH%.zip
+set OPENSSL_URL=https://github.com/openssl/openssl/archive/refs/tags/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
-set LIBSSH_URL=https://www.libssh.org/files/0.9/%LIBSSH%.tar.xz
-set LIBSSH2_URL=https://www.libssh2.org/download/%LIBSSH2%.tar.gz
+set LIBSSH_URL=https://www.libssh.org/files/0.10/%LIBSSH%.tar.xz
+set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/refs/tags/%LIBSSH2%.tar.gz
 
 cd %CACHE%
 if not exist openssh-portable-%OPENSSH%.zip powershell -Command "Invoke-WebRequest %OPENSSH_URL% -OutFile openssh-portable-%OPENSSH%.zip"
@@ -92,8 +92,8 @@ nmake -f ms\ntdll.mak >nul
 nmake -f ms\ntdll.mak install >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
-xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
-xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i 
+xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
 dir /b %TARGET%\openssl\lib\%PLATFORM%\libeay32.lib >nul || goto fail
@@ -113,9 +113,9 @@ cmake ..                                         		^
 	-G"%GENERATOR%"                                		^
 	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
 	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
-	-DBUILD_SHARED_LIBS=OFF     						
+	-DBUILD_SHARED_LIBS=OFF
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\zlibstatic.lib* %TARGET%\zlib\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\include %TARGET%\zlib\include /y /s /i
@@ -148,9 +148,9 @@ cmake .. 												^
 
 rem -DWITH_ZLIB=ON 										^
 rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include" 				^
-rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib" 
+rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
 
-cmake --build . --config %CONFIGURATION% --target ssh -- /clp:ErrorsOnly 
+cmake --build . --config %CONFIGURATION% --target ssh -- /clp:ErrorsOnly
 cmake -P cmake_install.cmake
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -169,7 +169,7 @@ if exist %LIBSSH2% rd /s /q %LIBSSH2%
 %DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 			^
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
 cd %LIBSSH2%
-mkdir build && cd build 
+mkdir build && cd build
 
 cmake .. 												^
 	-A %ARCH%  											^
@@ -232,4 +232,3 @@ goto :eof
 :fail
 echo FAILED
 exit /b 1
-
