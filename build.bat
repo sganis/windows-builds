@@ -1,7 +1,8 @@
 :: Golddrive
-:: 03/22/2020, sganis
+:: 03/22/2020, San
+:: 04/28/2024, upgraded to latest libs
 ::
-:: Visual Studio 2019 script to build:
+:: Visual Studio 2022 script to build:
 :: 1. OpenSSL
 :: 2. Zlib
 :: 3. LibSSH
@@ -23,7 +24,7 @@ set build_ossh=1
 
 ::set PLATFORM=x64
 ::set CONFIGURATION=Release
-set "GENERATOR=Visual Studio 16 2019"
+set "GENERATOR=Visual Studio 17 2022"
 
 if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set "GENERATOR=Visual Studio 16 2019" )
 if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set "GENERATOR=Visual Studio 15 2017" )
@@ -43,11 +44,11 @@ set LIBSSH2=libssh2-1.11.0
 set CACHE=C:\cache
 dir /b %CACHE% || mkdir %CACHE%
 
-:: openssh : 	https://github.com/PowerShell/openssh-portable/archive/refs/tags/v9.5.0.0.zip
-:: openssl :    https://github.com/openssl/openssl/archive/refs/tags/openssl-3.3.0.zip
-:: zlib: 		http://zlib.net/zlib131.zip
-:: libssh: 		https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz
-:: libssh2: 	https://github.com/libssh2/libssh2/archive/refs/tags/libssh2-1.11.0.tar.gz
+:: openssh : https://github.com/PowerShell/openssh-portable/archive/refs/tags/v9.5.0.0.zip
+:: openssl : https://github.com/openssl/openssl/archive/refs/tags/openssl-3.3.0.zip
+:: zlib    : http://zlib.net/zlib131.zip
+:: libssh  : https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz
+:: libssh2 : https://github.com/libssh2/libssh2/archive/refs/tags/libssh2-1.11.0.tar.gz
 
 set OPENSSH_URL=https://github.com/PowerShell/openssh-portable/archive/refs/tags/v%OPENSSH%.zip
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/refs/tags/%OPENSSL%.zip
@@ -58,9 +59,9 @@ set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/refs/tags/%LIBSSH2%.t
 cd %CACHE%
 if not exist openssh-portable-%OPENSSH%.zip powershell -Command "Invoke-WebRequest %OPENSSH_URL% -OutFile openssh-portable-%OPENSSH%.zip"
 if not exist openssl-%OPENSSL%.zip          powershell -Command "Invoke-WebRequest %OPENSSL_URL% -OutFile openssl-%OPENSSL%.zip"
-if not exist %ZLIB%.zip 		            powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
-if not exist %LIBSSH%.tar.xz 	            powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
-if not exist %LIBSSH2%.tar.gz 	            powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
+if not exist %ZLIB%.zip                     powershell -Command "Invoke-WebRequest %ZLIB_URL% -OutFile %ZLIB%.zip"
+if not exist %LIBSSH%.tar.xz                powershell -Command "Invoke-WebRequest %LIBSSH_URL% -OutFile %LIBSSH%.tar.xz"
+if not exist %LIBSSH2%.tar.gz               powershell -Command "Invoke-WebRequest %LIBSSH2_URL% -OutFile %LIBSSH2%.tar.gz"
 cd %CURDIR%
 
 set ARCH=x64
