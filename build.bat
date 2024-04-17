@@ -83,9 +83,9 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 
-perl Configure 				^
-	VC-%OARCH% 				^
-	--prefix=%PREFIX% 		^
+perl Configure                ^
+	VC-%OARCH%            ^
+	--prefix=%PREFIX%     ^
 	--openssldir=%PREFIX%
 nmake >nul
 nmake install >nul
@@ -107,11 +107,11 @@ if exist %ZLIBF% rd /s /q %ZLIBF%
 cd %ZLIBF%
 mkdir build && cd build || goto fail
 
-cmake ..                                         		^
-	-A %ARCH% 									 		^
-	-G"%GENERATOR%"                                		^
-	-DCMAKE_INSTALL_PREFIX=%PREFIX%  					^
-	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
+cmake ..                                                 ^
+	-A %ARCH%                                        ^
+	-G"%GENERATOR%"                                  ^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%                  ^
+	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG" ^
 	-DBUILD_SHARED_LIBS=OFF
 
 cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
@@ -127,26 +127,26 @@ dir /b %TARGET%\zlib\lib\%PLATFORM%\zlibstatic.lib >nul || goto fail
 set PREFIX=%CD%\prefix\libssh-%PLATFORM%
 if %build_ssh1% neq 1 goto libssh2
 if exist %LIBSSH% rd /s /q %LIBSSH%
-%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y 				^
+%DIR%\7za.exe e %CACHE%\%LIBSSH%.tar.xz -y                   ^
 	&& %DIR%\7za.exe x %LIBSSH%.tar -y >nul || goto fail
 cd %LIBSSH%
 mkdir build && cd build || goto fail
 
-cmake .. 												^
-	-A %ARCH%  											^
-	-G"%GENERATOR%"                        				^
-	-DCMAKE_INSTALL_PREFIX=%PREFIX% 			      	^
-	-DCMAKE_BUILD_TYPE=Release 							^
-	-DBUILD_SHARED_LIBS=ON          					^
-	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%       				^
-	-DWITH_SERVER=OFF 									^
-	-DWITH_PCAP=OFF										^
- 	-DWITH_SERVER=OFF 									^
- 	-DWITH_EXAMPLES=OFF 								^
+cmake ..                                 ^
+	-A %ARCH%                        ^
+	-G"%GENERATOR%"                  ^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%  ^
+	-DCMAKE_BUILD_TYPE=Release       ^
+	-DBUILD_SHARED_LIBS=ON           ^
+	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%  ^
+	-DWITH_SERVER=OFF                ^
+	-DWITH_PCAP=OFF	                 ^
+ 	-DWITH_SERVER=OFF                ^
+ 	-DWITH_EXAMPLES=OFF              ^
  	-DWITH_ZLIB=OFF
 
-rem -DWITH_ZLIB=ON 										^
-rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include" 				^
+rem -DWITH_ZLIB=ON                          
+rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include"  
 rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
 
 cmake --build . --config %CONFIGURATION% --target ssh -- /clp:ErrorsOnly
@@ -165,26 +165,26 @@ dir /b %TARGET%\libssh\lib\%PLATFORM%\ssh.dll >nul || goto fail
 set PREFIX=%CD%\prefix\libssh2-%PLATFORM%
 if %build_ssh2% neq 1 goto openssh
 if exist %LIBSSH2% rd /s /q %LIBSSH2%
-%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y 			^
+%DIR%\7za.exe e %CACHE%\%LIBSSH2%.tar.gz -y                   ^
 	&& %DIR%\7za.exe x %LIBSSH2%.tar -y >nul || goto fail
 cd %LIBSSH2%
 mkdir build && cd build
 
-cmake .. 												^
-	-A %ARCH%  											^
-	-G"%GENERATOR%"                        				^
-	-DCMAKE_INSTALL_PREFIX=%PREFIX%				      	^
-	-DBUILD_SHARED_LIBS=OFF  							^
-	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"	^
- 	-DCRYPTO_BACKEND=OpenSSL               				^
-	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%			        	^
-	-DBUILD_TESTING=ON  								^
-	-DBUILD_EXAMPLES=OFF        						^
-	-DENABLE_ZLIB_COMPRESSION=OFF 						^
- 	-DENABLE_CRYPT_NONE=ON								^
+cmake ..                                                  ^
+	-A %ARCH%                                         ^
+	-G"%GENERATOR%"                                   ^
+	-DCMAKE_INSTALL_PREFIX=%PREFIX%	                  ^
+	-DBUILD_SHARED_LIBS=OFF                           ^
+	-DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /D NDEBUG"  ^
+ 	-DCRYPTO_BACKEND=OpenSSL                          ^
+	-DOPENSSL_ROOT_DIR=%OPENSSLDIR%	                  ^
+	-DBUILD_TESTING=ON                                ^
+	-DBUILD_EXAMPLES=OFF                              ^
+	-DENABLE_ZLIB_COMPRESSION=OFF                     ^
+ 	-DENABLE_CRYPT_NONE=ON                            ^
  	-DCLEAR_MEMORY=OFF
 
-rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 		 		^
+rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib ^
 rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
 cmake --build . --config %CONFIGURATION% --target libssh2 -- /clp:ErrorsOnly
