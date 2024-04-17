@@ -86,17 +86,15 @@ perl Configure 				^
 	VC-%OARCH% 				^
 	--prefix=%PREFIX% 		^
 	--openssldir=%PREFIX%
-call ms\%DOMS%
-if %PLATFORM%==x86 call ms\do_nasm.bat
-nmake -f ms\ntdll.mak >nul
-nmake -f ms\ntdll.mak install >nul
+nmake >nul
+nmake install >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
-xcopy %PREFIX%\lib\libeay32.lib* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
-xcopy %PREFIX%\bin\libeay32.dll* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\lib\*.* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
+xcopy %PREFIX%\bin\*.* %TARGET%\openssl\lib\%PLATFORM% /y /s /i
 cd %CURDIR%
 dir /b %TARGET%\openssl\include >nul || goto fail
-dir /b %TARGET%\openssl\lib\%PLATFORM%\libeay32.lib >nul || goto fail
+dir /b %TARGET%\openssl\lib\%PLATFORM%\*.lib >nul || goto fail
 
 
 :zlib
