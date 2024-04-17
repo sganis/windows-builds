@@ -144,13 +144,11 @@ cmake ..                                 ^
  	-DWITH_SERVER=OFF                ^
  	-DWITH_EXAMPLES=OFF              ^
  	-DWITH_ZLIB=OFF
+        rem -DWITH_ZLIB=ON                          
+        rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include"  
+        rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
 
-rem -DWITH_ZLIB=ON                          
-rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include"  
-rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
-
-cmake --build . --config %CONFIGURATION% --target ssh -- /clp:ErrorsOnly
-cmake -P cmake_install.cmake
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -183,12 +181,10 @@ cmake ..                                                  ^
 	-DENABLE_ZLIB_COMPRESSION=OFF                     ^
  	-DENABLE_CRYPT_NONE=ON                            ^
  	-DCLEAR_MEMORY=OFF
+        rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 
+        rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib ^
-rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
-
-cmake --build . --config %CONFIGURATION% --target libssh2 -- /clp:ErrorsOnly
-cmake -P cmake_install.cmake
+cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
