@@ -206,7 +206,7 @@ cd %OSSH%
 
 python ..\patch_openssh.py || goto fail
 
-set "ARGS=-p:Configuration=Release -m -v:quiet -t:rebuild /p:PlatformToolset=v142"
+set "ARGS=-p:Configuration=Release -m -v:quiet -t:rebuild /p:PlatformToolset=v143"
 msbuild contrib\win32\openssh\config.vcxproj %ARGS%
 msbuild contrib\win32\openssh\win32iocompat.vcxproj %ARGS%
 msbuild contrib\win32\openssh\openbsd_compat.vcxproj %ARGS%
@@ -216,7 +216,7 @@ msbuild contrib\win32\openssh\ssh.vcxproj %ARGS%
 msbuild contrib\win32\openssh\sftp.vcxproj %ARGS%
 
 xcopy bin\%ARCH%\Release\*.exe %TARGET%\openssh\%PLATFORM% /y /s /i >nul
-xcopy %TARGET%\openssl\lib\%PLATFORM%\libeay32.dll* %TARGET%\openssh\%PLATFORM% /y /s /i >nul
+xcopy %TARGET%\openssl\lib\%PLATFORM%\*.dll* %TARGET%\openssh\%PLATFORM% /y /s /i >nul
 cd %CURDIR%
 dir /b %TARGET%\openssh\%PLATFORM%\ssh-keygen.exe >nul || goto fail
 dir /b %TARGET%\openssh\%PLATFORM%\ssh.exe >nul || goto fail
