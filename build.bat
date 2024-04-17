@@ -48,13 +48,13 @@ dir /b %CACHE% || mkdir %CACHE%
 :: openssl : https://github.com/openssl/openssl/archive/refs/tags/openssl-3.3.0.zip
 :: zlib    : http://zlib.net/zlib131.zip
 :: libssh  : https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz
-:: libssh2 : https://github.com/libssh2/libssh2/archive/refs/tags/libssh2-1.11.0.tar.gz
+:: libssh2 : https://libssh2.org/download/libssh2-1.11.0.tar.gz
 
 set OPENSSH_URL=https://github.com/PowerShell/openssh-portable/archive/refs/tags/v%OPENSSH%.zip
 set OPENSSL_URL=https://github.com/openssl/openssl/archive/refs/tags/%OPENSSL%.zip
 set ZLIB_URL=http://zlib.net/%ZLIB%.zip
 set LIBSSH_URL=https://www.libssh.org/files/0.10/%LIBSSH%.tar.xz
-set LIBSSH2_URL=https://github.com/libssh2/libssh2/archive/refs/tags/%LIBSSH2%.tar.gz
+set LIBSSH2_URL=https://libssh2.org/download/%LIBSSH2%.tar.gz
 
 cd %CACHE%
 if not exist openssh-portable-%OPENSSH%.zip powershell -Command "Invoke-WebRequest %OPENSSH_URL% -OutFile openssh-portable-%OPENSSH%.zip"
