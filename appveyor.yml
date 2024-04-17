@@ -1,7 +1,7 @@
 # winlibs
 version: 1.{build}
 image: 
-  - Visual Studio 2019
+  - Visual Studio 2022
 platform: 
   - x64
 configuration: 
@@ -25,10 +25,10 @@ install:
 build_script:
   - rd /s /q C:\OpenSSL-Win64
   - rd /s /q C:\OpenSSL-Win32
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
   - set PLATFORM=x64
   - call build.bat
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
   - set PLATFORM=x86
   - call build.bat
 test: off
