@@ -83,14 +83,13 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 %DIR%\7za.exe x %CACHE%\openssl-%OPENSSL%.zip -y >nul || goto fail
 cd openssl-%OPENSSL%
 
-perl Configure                ^
-	no-shared no-deprecated ^
-	VC-%OARCH%            ^
-	--prefix=%PREFIX%     ^
+perl Configure              ^
+	no-shared  ^
+	VC-%OARCH%              ^
+	--prefix=%PREFIX%       ^
 	--openssldir=%PREFIX%
 set CL=/MP
 nmake build_generated >nul
-nmake libcrypto.lib >nul
 nmake install_dev >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
