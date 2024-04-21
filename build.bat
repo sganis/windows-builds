@@ -92,7 +92,7 @@ perl Configure                ^
 	VC-%OARCH%            ^
 	--prefix=%PREFIX%     ^
 	--openssldir=%PREFIX%
-
+set CL=/MP
 nmake build_libs
 nmake install_dev >nul
 
