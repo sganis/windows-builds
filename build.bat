@@ -148,7 +148,8 @@ cmake ..                                 ^
         rem -DZLIB_INCLUDE_DIR="%ZLIBDIR%/include"  
         rem -DZLIB_LIBRARY="%ZLIBDIR%/lib/zlib.lib"
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install 
+rem -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\ssh.lib* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
 xcopy %PREFIX%\bin\ssh.dll* %TARGET%\libssh\lib\%PLATFORM% /y /s /i
@@ -182,7 +183,8 @@ cmake ..                                                  ^
         rem -DZLIB_LIBRARY=%ZLIBDIR%/lib/zlib.lib 
         rem -DZLIB_INCLUDE_DIR=%ZLIBDIR%/include
 
-cmake --build . --config %CONFIGURATION% --target install -- /clp:ErrorsOnly
+cmake --build . --config %CONFIGURATION% --target install 
+rem -- /clp:ErrorsOnly
 
 xcopy %PREFIX%\lib\libssh2.lib* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
 rem xcopy %PREFIX%\bin\libssh2.dll* %TARGET%\libssh2\lib\%PLATFORM% /y /s /i
