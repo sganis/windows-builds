@@ -84,7 +84,7 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 cd openssl-%OPENSSL%
 
 perl Configure                ^
-	no-shared no-stdio no-sock no-comp no-ssl3 ^
+	no-shared no-stdio no-sock no-comp no-ssl3 no-engine ^
 	VC-%OARCH%            ^
 	--prefix=%PREFIX%     ^
 	--openssldir=%PREFIX%
