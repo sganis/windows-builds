@@ -84,11 +84,17 @@ if exist openssl-%OPENSSL% rd /s /q openssl-%OPENSSL%
 cd openssl-%OPENSSL%
 
 perl Configure                ^
+	no-shared             ^
+	no-stdio              ^
+	no-sock               ^
+	no-engine no-hw       ^
+	no-comp no-ssl2 no-ssl3	^
 	VC-%OARCH%            ^
 	--prefix=%PREFIX%     ^
 	--openssldir=%PREFIX%
-nmake >nul
-nmake install >nul
+
+nmake build_libs
+nmake install_dev >nul
 
 xcopy %PREFIX%\include %TARGET%\openssl\include /y /s /i >nul || goto fail
 xcopy %PREFIX%\lib\*.lib %TARGET%\openssl\lib\%PLATFORM% /y /s /i
