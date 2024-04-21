@@ -28,9 +28,9 @@ build_script:
   - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
   - set PLATFORM=x64
   - call build.bat
-  - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - set PLATFORM=x86
-  - call build.bat
+  #- call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
+  #- set PLATFORM=x86
+  #- call build.bat
 test: off
 artifacts:
   - path: vendor
