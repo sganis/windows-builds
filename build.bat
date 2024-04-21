@@ -18,9 +18,9 @@ set DIR=%DIR:~0,-1%
 
 set build_ossl=1
 set build_zlib=1
-set build_ssh1=1
+set build_ssh1=0
 set build_ssh2=1
-set build_ossh=1
+set build_ossh=0
 
 ::set PLATFORM=x64
 ::set CONFIGURATION=Release
